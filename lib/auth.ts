@@ -1,5 +1,7 @@
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { sql } from "./db";
 
 // ---------------------------------------------------------------------------
 // Staff authentication — cookie sessions
@@ -39,4 +41,44 @@ export async function createSession(userId: number) {
 export async function destroySession() {
   const cookieStore = await cookies();
   cookieStore.delete(COOKIE_NAME);
+}
+
+/** The signed-in staff member, or null. Reads the cookie, then the database. */
+export async function getStaffUser(): Promise<StaffUser | null> {
+  const cookieStore = await cookies();
+  const raw = cookieStore.get(COOKIE_NAME)?.value;
+  if (!raw) return null;
+
+  const [userId, sig] = raw.split(".");
+  if (!userId || !sig || sig !== signature(userId)) return null;
+
+  const rows = await sql`
+    select id, name, email from staff_users where id = ${Number(userId)}
+  `;
+  return (rows[0] as StaffUser) ?? null;
+}
+
+/**
+ * Use at the top of a *page* that staff only should see.
+ * Signed out visitors get bounced to /login.
+ */
+export async function requireStaffPage(): Promise<StaffUser> {
+  const user = await getStaffUser();
+  if (!user) redirect("/login");
+  return user;
+}
+
+/**
+ * Use at the top of every *mutation* (server action or route handler that
+ * creates, edits or deletes something staff-only).
+ *
+ * requireStaffPage() only hides the dashboard *page*. Server actions are plain
+ * HTTP POST endpoints: anyone who knows the URL can call them directly without
+ * ever loading our UI. So every action in app/actions/staff.ts starts with
+ * `await requireStaff()` and throws before touching the database.
+ */
+export async function requireStaff(): Promise<StaffUser> {
+  const user = await getStaffUser();
+  if (!user) throw new Error("Unauthorized: you must be signed in as staff.");
+  return user;
 }
