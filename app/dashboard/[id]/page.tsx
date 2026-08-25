@@ -1,18 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import DetailRow from "@/components/DetailRow";
 import StatusBadge from "@/components/StatusBadge";
 import { sql } from "@/lib/db";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
-
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="px-3 py-3">
-      <dt className="text-sm text-gray-600">{label}</dt>
-      <dd className="mt-0.5">{children}</dd>
-    </div>
-  );
-}
 
 export default async function BookingDetailPage({ params }: PageProps<"/dashboard/[id]">) {
   const { id: rawId } = await params;
@@ -49,17 +41,17 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
       </div>
 
       <dl className="divide-y divide-gray-200 border border-gray-200 rounded">
-        <Row label="Email">{booking.email}</Row>
-        <Row label="Phone">{booking.phone}</Row>
-        <Row label="Address">
+        <DetailRow label="Email">{booking.email}</DetailRow>
+        <DetailRow label="Phone">{booking.phone}</DetailRow>
+        <DetailRow label="Address">
           {booking.street_address}, {booking.city}
-        </Row>
-        <Row label="Lawn size">{lawnSizeLabel(booking.lawn_size)}</Row>
-        <Row label="Service date">{formatDate(booking.service_date)}</Row>
-        <Row label="Time slot">{timeSlotLabel(booking.time_slot)}</Row>
-        <Row label="Note">{booking.note || "None"}</Row>
-        <Row label="Created">{formatDateTime(booking.created_at)}</Row>
-        <Row label="Updated">{formatDateTime(booking.updated_at)}</Row>
+        </DetailRow>
+        <DetailRow label="Lawn size">{lawnSizeLabel(booking.lawn_size)}</DetailRow>
+        <DetailRow label="Service date">{formatDate(booking.service_date)}</DetailRow>
+        <DetailRow label="Time slot">{timeSlotLabel(booking.time_slot)}</DetailRow>
+        <DetailRow label="Note">{booking.note || "None"}</DetailRow>
+        <DetailRow label="Created">{formatDateTime(booking.created_at)}</DetailRow>
+        <DetailRow label="Updated">{formatDateTime(booking.updated_at)}</DetailRow>
       </dl>
     </div>
   );
