@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* Light mode only — one predictable look for the demo. */
 body {
   background: #ffffff;
   color: #171717;
