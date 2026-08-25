@@ -18,7 +18,10 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Bookings</h1>
+      <h1 className="text-2xl font-bold mb-1">Bookings</h1>
+      <p className="text-sm text-gray-600 mb-4">
+        All lawn-care jobs. Open a row to see contact details and notes.
+      </p>
 
       {/* // TO-DO: Add search filters */}
 
@@ -27,50 +30,59 @@ export default async function DashboardPage() {
       {bookings.length === 0 ? (
         <p className="text-sm text-gray-500 mt-3">No bookings yet.</p>
       ) : (
-        <ul className="divide-y divide-gray-200 border border-gray-200 rounded">
-          {bookings.map((booking) => (
-            <li key={booking.id} className="p-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-medium">
-                    {booking.full_name} · {lawnSizeLabel(booking.lawn_size)}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {formatDate(booking.service_date)} · {timeSlotLabel(booking.time_slot)}
-                  </p>
-                  <p className="text-sm text-gray-600">
+        <div className="overflow-x-auto border border-gray-200 rounded">
+          <table className="w-full text-sm text-left">
+            <thead className="border-b border-gray-200 bg-gray-50">
+              <tr>
+                <th className="px-3 py-2 font-medium">Date</th>
+                <th className="px-3 py-2 font-medium">Customer</th>
+                <th className="px-3 py-2 font-medium">Location</th>
+                <th className="px-3 py-2 font-medium">Size</th>
+                <th className="px-3 py-2 font-medium">Time</th>
+                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {bookings.map((booking) => (
+                <tr key={booking.id}>
+                  <td className="px-3 py-2 whitespace-nowrap">{formatDate(booking.service_date)}</td>
+                  <td className="px-3 py-2 font-medium whitespace-nowrap">{booking.full_name}</td>
+                  <td className="px-3 py-2">
                     {booking.street_address}, {booking.city}
-                  </p>
-                  {booking.note && <p className="text-sm text-gray-500 mt-1">Note: {booking.note}</p>}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <StatusBadge status={booking.status} />
-                  {booking.status !== "confirmed" && (
-                    // TO-DO: Add action to confirm booking
-                    <button className="text-xs border border-green-700 text-green-700 rounded px-2 py-1">
-                      Confirm
-                    </button>
-                  )}
-                  {booking.status !== "cancelled" && (
-                    // TO-DO: Add action to cancel booking
-                    <button className="text-xs border border-red-600 text-red-600 rounded px-2 py-1">
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-2 mt-2">
-                <Link
-                  href={`/dashboard/${booking.id}`}
-                  className="text-xs border border-gray-300 rounded px-2 py-1"
-                >
-                  View Details
-                </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  </td>
+                  <td className="px-3 py-2 whitespace-nowrap">{lawnSizeLabel(booking.lawn_size)}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{timeSlotLabel(booking.time_slot)}</td>
+                  <td className="px-3 py-2">
+                    <StatusBadge status={booking.status} />
+                  </td>
+                  <td className="px-3 py-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        href={`/dashboard/${booking.id}`}
+                        className="text-xs border border-gray-300 rounded px-2 py-1"
+                      >
+                        View Details
+                      </Link>
+                      {booking.status !== "confirmed" && (
+                        // TO-DO: Add action to confirm booking
+                        <button className="text-xs border border-green-700 text-green-700 rounded px-2 py-1">
+                          Confirm
+                        </button>
+                      )}
+                      {booking.status !== "cancelled" && (
+                        // TO-DO: Add action to cancel booking
+                        <button className="text-xs border border-red-600 text-red-600 rounded px-2 py-1">
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
