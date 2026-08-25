@@ -24,53 +24,53 @@ export default async function DashboardPage() {
 
       <p className="text-sm text-gray-600 mb-2">{bookings.length} booking(s)</p>
 
-      <ul className="divide-y divide-gray-200 border border-gray-200 rounded">
-        {bookings.map((booking) => (
-          <li key={booking.id} className="p-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-medium">
-                  {booking.full_name} · {lawnSizeLabel(booking.lawn_size)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {formatDate(booking.service_date)} · {timeSlotLabel(booking.time_slot)}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {booking.street_address}, {booking.city}
-                </p>
-                {booking.note && <p className="text-sm text-gray-500 mt-1">Note: {booking.note}</p>}
+      {bookings.length === 0 ? (
+        <p className="text-sm text-gray-500 mt-3">No bookings yet.</p>
+      ) : (
+        <ul className="divide-y divide-gray-200 border border-gray-200 rounded">
+          {bookings.map((booking) => (
+            <li key={booking.id} className="p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">
+                    {booking.full_name} · {lawnSizeLabel(booking.lawn_size)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {formatDate(booking.service_date)} · {timeSlotLabel(booking.time_slot)}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {booking.street_address}, {booking.city}
+                  </p>
+                  {booking.note && <p className="text-sm text-gray-500 mt-1">Note: {booking.note}</p>}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <StatusBadge status={booking.status} />
+                  {booking.status !== "confirmed" && (
+                    // TO-DO: Add action to confirm booking
+                    <button className="text-xs border border-green-700 text-green-700 rounded px-2 py-1">
+                      Confirm
+                    </button>
+                  )}
+                  {booking.status !== "cancelled" && (
+                    // TO-DO: Add action to cancel booking
+                    <button className="text-xs border border-red-600 text-red-600 rounded px-2 py-1">
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="flex flex-col gap-2">
-                <StatusBadge status={booking.status} />
-                {booking.status !== "confirmed" && (
-                  // TO-DO: Add action to confirm booking
-                  <button className="text-xs border border-green-700 text-green-700 rounded px-2 py-1">
-                    Confirm
-                  </button>
-                )}
-                {booking.status !== "cancelled" && (
-                  // TO-DO: Add action to cancel booking
-                  <button className="text-xs border border-red-600 text-red-600 rounded px-2 py-1">
-                    Cancel
-                  </button>
-                )}
+
+              <div className="flex gap-2 mt-2">
+                <Link
+                  href={`/dashboard/${booking.id}`}
+                  className="text-xs border border-gray-300 rounded px-2 py-1"
+                >
+                  View Details
+                </Link>
               </div>
-            </div>
-
-            <div className="flex gap-2 mt-2">
-              <Link
-                href={`/dashboard/${booking.id}`}
-                className="text-xs border border-gray-300 rounded px-2 py-1"
-              >
-                View Details
-              </Link>
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      {bookings.length === 0 && (
-        <p className="text-sm text-gray-500 mt-3">No bookings match these filters.</p>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
