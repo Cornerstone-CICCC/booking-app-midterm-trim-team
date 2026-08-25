@@ -57,28 +57,3 @@ export async function getStaffUser(): Promise<StaffUser | null> {
   `;
   return (rows[0] as StaffUser) ?? null;
 }
-
-/**
- * Use at the top of a *page* that staff only should see.
- * Signed out visitors get bounced to /login.
- */
-export async function requireStaffPage(): Promise<StaffUser> {
-  const user = await getStaffUser();
-  if (!user) redirect("/login");
-  return user;
-}
-
-/**
- * Use at the top of every *mutation* (server action or route handler that
- * creates, edits or deletes something staff-only).
- *
- * requireStaffPage() only hides the dashboard *page*. Server actions are plain
- * HTTP POST endpoints: anyone who knows the URL can call them directly without
- * ever loading our UI. So every action in app/actions/staff.ts starts with
- * `await requireStaff()` and throws before touching the database.
- */
-export async function requireStaff(): Promise<StaffUser> {
-  const user = await getStaffUser();
-  if (!user) throw new Error("Unauthorized: you must be signed in as staff.");
-  return user;
-}
