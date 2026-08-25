@@ -1,8 +1,8 @@
-import Link from "next/link";
-import StatusBadge from "@/components/StatusBadge";
-import { sql } from "@/lib/db";
-import { formatDate } from "@/lib/format";
-import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
+import Link from 'next/link'
+import StatusBadge from '@/components/StatusBadge'
+import { sql } from '@/lib/db'
+import { formatDate } from '@/lib/format'
+import { lawnSizeLabel, timeSlotLabel, type Booking } from '@/lib/types'
 
 // The staff dashboard: every booking, filterable, with confirm/cancel buttons.
 
@@ -14,7 +14,7 @@ export default async function DashboardPage() {
       time_slot, status, note, created_at, updated_at
     from bookings
     order by service_date asc, time_slot asc
-  `) as Booking[];
+  `) as Booking[]
 
   return (
     <div>
@@ -33,22 +33,27 @@ export default async function DashboardPage() {
                   {booking.full_name} · {lawnSizeLabel(booking.lawn_size)}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {formatDate(booking.service_date)} · {timeSlotLabel(booking.time_slot)}
+                  {formatDate(booking.service_date)} ·{' '}
+                  {timeSlotLabel(booking.time_slot)}
                 </p>
                 <p className="text-sm text-gray-600">
                   {booking.street_address}, {booking.city}
                 </p>
-                {booking.note && <p className="text-sm text-gray-500 mt-1">Note: {booking.note}</p>}
+                {booking.note && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Note: {booking.note}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-2">
                 <StatusBadge status={booking.status} />
-                {booking.status !== "confirmed" && (
+                {booking.status !== 'confirmed' && (
                   // TO-DO: Add action to confirm booking
                   <button className="text-xs border border-green-700 text-green-700 rounded px-2 py-1">
                     Confirm
                   </button>
                 )}
-                {booking.status !== "cancelled" && (
+                {booking.status !== 'cancelled' && (
                   // TO-DO: Add action to cancel booking
                   <button className="text-xs border border-red-600 text-red-600 rounded px-2 py-1">
                     Cancel
@@ -59,7 +64,7 @@ export default async function DashboardPage() {
 
             <div className="flex gap-2 mt-2">
               <Link
-                href={`/dashboard/${booking.id}`}
+                href={`/dashboard/bookingsDetails/${booking.id}`}
                 className="text-xs border border-gray-300 rounded px-2 py-1"
               >
                 View Details
@@ -70,8 +75,10 @@ export default async function DashboardPage() {
       </ul>
 
       {bookings.length === 0 && (
-        <p className="text-sm text-gray-500 mt-3">No bookings match these filters.</p>
+        <p className="text-sm text-gray-500 mt-3">
+          No bookings match these filters.
+        </p>
       )}
     </div>
-  );
+  )
 }
