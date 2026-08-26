@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
 import { toast } from "sonner";
 
+import DateField from "@/components/DateField";
 import RadioCardGroup from "@/components/RadioCardGroup";
 import StepHeader from "@/components/StepHeader";
 import StepNav from "@/components/StepNav";
-import TextField from "@/components/TextField";
 import { getDraft, saveDraft } from "@/lib/storage";
 import { TIME_SLOTS, type TimeSlot } from "@/lib/types";
 
@@ -48,13 +48,10 @@ export default function Step3Page() {
         onSubmit={handleSubmit}
         className="space-y-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm"
       >
-        <TextField
+        <DateField
           label="Service Date"
-          name="service_date"
-          type="date"
           value={serviceDate}
-          onChange={(e) => setServiceDate(e.target.value)}
-          required
+          onChange={setServiceDate}
         />
 
         <RadioCardGroup
