@@ -3,6 +3,7 @@
 import { sql } from '@/lib/db'
 import { Booking } from '@/lib/types'
 import { revalidatePath } from 'next/cache'
+import { emit } from 'process'
 
 export async function bookingsDB(id: number) {
   const DBresult = (await sql`
@@ -55,15 +56,24 @@ export async function updateDB(
   time_slot: string,
   note: string,
 ) {
-  /*
-  await sql`UPDATE bookings
-SET city = "${city}", street_address = "${street_address}", lawn_size = "${lawn_size}", 
-full_name = "${full_name}", email = "${email}", phone = "${phone}",
-service_date = "${service_date}", time_slot = "${time_slot}", note = "${note}"
-WHERE id= ${id};`*/
   await sql`UPDATE bookings SET city = ${city}, street_address = ${street_address}, lawn_size = ${lawn_size}, full_name = ${full_name}, email = ${email}, phone = ${phone}, service_date = ${service_date}, time_slot = ${time_slot}, note = ${note}
 WHERE id= ${id};`
 
   revalidatePath(`/dashboard/bookingsDetails/${id}`)
   return 1
+}
+
+export async function searchDB(email: string) {
+  console.log('3333333')
+  const books = (await sql`
+      select
+        id, city, street_address, lawn_size, full_name, email, phone,
+        to_char(service_date, 'YYYY-MM-DD') as service_date,
+        time_slot, status, note, created_at, updated_at
+      from bookings
+     
+      order by service_date asc, time_slot asc
+    `) as Booking[]
+  revalidatePath(`/`)
+  return books
 }
