@@ -42,3 +42,28 @@ SET status = 'pending'
 WHERE id= ${id};`
   revalidatePath(`/dashboard/bookingsDetails/${id}`)
 }
+
+export async function updateDB(
+  id: number,
+  city: string,
+  street_address: string,
+  lawn_size: string,
+  full_name: string,
+  email: string,
+  phone: string,
+  service_date: Date,
+  time_slot: string,
+  note: string,
+) {
+  /*
+  await sql`UPDATE bookings
+SET city = "${city}", street_address = "${street_address}", lawn_size = "${lawn_size}", 
+full_name = "${full_name}", email = "${email}", phone = "${phone}",
+service_date = "${service_date}", time_slot = "${time_slot}", note = "${note}"
+WHERE id= ${id};`*/
+  await sql`UPDATE bookings SET city = ${city}, street_address = ${street_address}, lawn_size = ${lawn_size}, full_name = ${full_name}, email = ${email}, phone = ${phone}, service_date = ${service_date}, time_slot = ${time_slot}, note = ${note}
+WHERE id= ${id};`
+
+  revalidatePath(`/dashboard/bookingsDetails/${id}`)
+  return 1
+}
