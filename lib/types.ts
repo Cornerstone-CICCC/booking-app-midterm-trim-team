@@ -1,6 +1,6 @@
 export type LawnSize = "small" | "medium" | "large" | "extra_large";
 export type TimeSlot = "morning" | "afternoon" | "full_day";
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 
 export type Booking = {
   id: number;
@@ -39,13 +39,19 @@ export const CITIES = [
   "Vancouver",
   "West Vancouver",
   "White Rock",
-];
+] as const;
+
+export type City = (typeof CITIES)[number];
 
 export const LAWN_SIZES: { value: LawnSize; label: string; hint: string }[] = [
   { value: "small", label: "Small", hint: "up to 1,000 sq ft — half a day" },
   { value: "medium", label: "Medium", hint: "1,000–3,000 sq ft — half a day" },
   { value: "large", label: "Large", hint: "3,000–6,000 sq ft — a full day" },
-  { value: "extra_large", label: "Extra large", hint: "6,000+ sq ft — a full day" },
+  {
+    value: "extra_large",
+    label: "Extra large",
+    hint: "6,000+ sq ft — a full day",
+  },
 ];
 
 export const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
@@ -57,7 +63,8 @@ export const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
 export const STATUSES: { value: BookingStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancel" },
 ];
 
 // Small helpers so the UI can display something more human-readable

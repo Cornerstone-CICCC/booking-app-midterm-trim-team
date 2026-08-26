@@ -32,7 +32,7 @@ create table if not exists bookings (
   time_slot      text not null check (time_slot in ('morning', 'afternoon', 'full_day')),
 
   -- staff-managed fields
-  status         text not null default 'pending' check (status in ('pending', 'confirmed', 'cancelled')),
+  status         text not null default 'pending' check (status in ('pending', 'confirmed', 'completed', 'cancelled')),
   note           text,
 
   created_at     timestamptz not null default now(),
