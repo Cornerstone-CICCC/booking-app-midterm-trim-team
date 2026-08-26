@@ -39,13 +39,19 @@ export const CITIES = [
   "Vancouver",
   "West Vancouver",
   "White Rock",
-];
+] as const;
+
+export type City = (typeof CITIES)[number];
 
 export const LAWN_SIZES: { value: LawnSize; label: string; hint: string }[] = [
   { value: "small", label: "Small", hint: "up to 1,000 sq ft — half a day" },
   { value: "medium", label: "Medium", hint: "1,000–3,000 sq ft — half a day" },
   { value: "large", label: "Large", hint: "3,000–6,000 sq ft — a full day" },
-  { value: "extra_large", label: "Extra large", hint: "6,000+ sq ft — a full day" },
+  {
+    value: "extra_large",
+    label: "Extra large",
+    hint: "6,000+ sq ft — a full day",
+  },
 ];
 
 export const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
