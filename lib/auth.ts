@@ -15,7 +15,7 @@ import { sql } from "./db";
 //      user 1 by typing "1" into their cookie jar.
 // ---------------------------------------------------------------------------
 
-const COOKIE_NAME = "trim_team_session";
+const COOKIE_NAME = "trim_team_session"; // must match proxy.ts SESSION_COOKIE
 const ONE_WEEK = 60 * 60 * 24 * 7;
 
 export type StaffUser = { id: number; name: string; email: string };
@@ -40,7 +40,13 @@ export async function createSession(userId: number) {
 /** Called by the logout action. */
 export async function destroySession() {
   const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
+  cookieStore.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+  });
 }
 
 /** The signed-in staff member, or null. Reads the cookie, then the database. */

@@ -1,10 +1,32 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import DetailRow from "@/components/DetailRow";
 import StatusBadge from "@/components/StatusBadge";
 import { sql } from "@/lib/db";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-1 gap-y-0.5 py-3 border-b border-gray-100 last:border-b-0 sm:grid-cols-[6.75rem_1fr] sm:gap-x-6 sm:items-baseline">
+      <dt className="text-sm text-gray-500">{label}</dt>
+      <dd className="text-sm text-gray-900 wrap-break-word">{children}</dd>
+    </div>
+  );
+}
+
+function railTone(status: string) {
+  if (status === "pending") return "bg-amber-50 border-amber-100";
+  if (status === "completed") return "bg-blue-50 border-blue-100";
+  if (status === "cancelled") return "bg-red-50 border-red-100";
+  return "bg-green-50 border-green-100";
+}
+
+function railBorder(status: string) {
+  if (status === "pending") return "border-amber-100";
+  if (status === "completed") return "border-blue-100";
+  if (status === "cancelled") return "border-red-100";
+  return "border-green-100";
+}
 
 export default async function BookingDetailPage({ params }: PageProps<"/dashboard/[id]">) {
   const { id: rawId } = await params;
@@ -24,35 +46,76 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
   const booking = rows[0];
   if (!booking) notFound();
 
+  const rail = railTone(booking.status);
+  const innerBorder = railBorder(booking.status);
+
   return (
-    <div>
-      <p className="mb-4">
-        <Link href="/dashboard" className="text-sm underline">
-          Back to bookings
+    <div className="max-w-3xl mx-auto">
+      <p className="mb-5">
+        <Link href="/dashboard" className="text-sm font-medium text-green-800 hover:underline">
+          ← Back to bookings
         </Link>
       </p>
 
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
-          <h1 className="text-2xl font-bold">{booking.full_name}</h1>
-          <p className="text-sm text-gray-600">Booking #{booking.id}</p>
-        </div>
-        <StatusBadge status={booking.status} />
+      <div className="w-fit mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Booking</h1>
+        <div className="h-1 bg-green-700 rounded-full mt-2" />
       </div>
 
-      <dl className="divide-y divide-gray-200 border border-gray-200 rounded">
-        <DetailRow label="Email">{booking.email}</DetailRow>
-        <DetailRow label="Phone">{booking.phone}</DetailRow>
-        <DetailRow label="Address">
-          {booking.street_address}, {booking.city}
-        </DetailRow>
-        <DetailRow label="Lawn size">{lawnSizeLabel(booking.lawn_size)}</DetailRow>
-        <DetailRow label="Service date">{formatDate(booking.service_date)}</DetailRow>
-        <DetailRow label="Time slot">{timeSlotLabel(booking.time_slot)}</DetailRow>
-        <DetailRow label="Note">{booking.note || "None"}</DetailRow>
-        <DetailRow label="Created">{formatDateTime(booking.created_at)}</DetailRow>
-        <DetailRow label="Updated">{formatDateTime(booking.updated_at)}</DetailRow>
-      </dl>
+      <div className="flex flex-col md:flex-row md:items-stretch border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+        <div className="min-w-0 flex-1 px-4 sm:px-6 py-5">
+          <dl>
+            <Info label="Client name">{booking.full_name}</Info>
+            <Info label="email">
+              <a href={`mailto:${booking.email}`} className="hover:underline break-all">
+                {booking.email}
+              </a>
+            </Info>
+            <Info label="Phone">
+              <a href={`tel:${booking.phone}`} className="hover:underline">
+                {booking.phone}
+              </a>
+            </Info>
+            <Info label="Lawn size">{lawnSizeLabel(booking.lawn_size)}</Info>
+            <Info label="Date/Time">
+              <span className="block">{formatDate(booking.service_date)}</span>
+              <span className="text-gray-500">{timeSlotLabel(booking.time_slot)}</span>
+            </Info>
+            <Info label="Address">
+              {booking.street_address}, {booking.city}
+            </Info>
+            <Info label="Note">
+              {booking.note ? booking.note : <span className="font-normal text-gray-400">None</span>}
+            </Info>
+          </dl>
+        </div>
+
+        <aside className={`flex flex-col gap-4 shrink-0 md:w-52 px-4 py-5 border-t md:border-t-0 md:border-l ${rail}`}>
+          <div className={`rounded-xl bg-white px-3 py-3 border ${innerBorder}`}>
+            <p className="text-xs text-gray-500 mb-2">Status</p>
+            <StatusBadge status={booking.status} className="block w-full text-sm py-1.5 text-center" />
+          </div>
+
+          <div className="md:mt-auto space-y-2">
+            {booking.status !== "cancelled" && (
+              // TO-DO: Add action to cancel booking
+              <button
+                type="button"
+                className="w-full text-sm border border-red-600 text-red-600 bg-white rounded-lg px-3 py-2 hover:bg-red-50"
+              >
+                Cancel
+              </button>
+            )}
+            {/* TO-DO: Add action to update booking */}
+            <button
+              type="button"
+              className="w-full text-sm border border-green-800 text-green-800 bg-white rounded-lg px-3 py-2 hover:bg-white"
+            >
+              Update information
+            </button>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }
