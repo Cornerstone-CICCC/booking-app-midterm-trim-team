@@ -1,32 +1,33 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CITIES, LAWN_SIZES, type LawnSize, type City } from "@/lib/types";
-import { getDraft, saveDraft } from "@/lib/storage";
-import StepHeader from "@/components/StepHeader";
-import TextField from "@/components/TextField";
-import SelectField from "@/components/SelectField";
+import { SubmitEvent, useState } from "react";
+
 import RadioCardGroup from "@/components/RadioCardGroup";
+import SelectField from "@/components/SelectField";
+import StepHeader from "@/components/StepHeader";
 import StepNav from "@/components/StepNav";
+import TextField from "@/components/TextField";
+import { getDraft, saveDraft } from "@/lib/storage";
+import { CITIES, LAWN_SIZES, type City, type LawnSize } from "@/lib/types";
 
 export default function Step1Page() {
   const router = useRouter();
+  const currentDraft = getDraft();
 
-  const [city, setCity] = useState<City>(CITIES[0]);
-  const [streetAddress, setStreetAddress] = useState("");
-  const [lawnSize, setLawnSize] = useState<LawnSize>(LAWN_SIZES[0].value);
+  const [city, setCity] = useState<City>(
+    (currentDraft.city as City) ?? CITIES[0],
+  );
+  const [streetAddress, setStreetAddress] = useState(
+    currentDraft.street_address ?? "",
+  );
+  const [lawnSize, setLawnSize] = useState<LawnSize>(
+    currentDraft.lawn_size ?? LAWN_SIZES[0].value,
+  );
 
-  useEffect(() => {
-    const draft = getDraft();
-
-    if (draft.city) setCity(draft.city);
-    if (draft.street_address) setStreetAddress(draft.street_address);
-    if (draft.lawn_size) setLawnSize(draft.lawn_size);
-  }, []);
-
-  const handleNext = (e: React.FormEvent) => {
+  const handleNext = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!streetAddress.trim()) {
       alert("Please enter your street address.");
       return;
@@ -37,6 +38,7 @@ export default function Step1Page() {
       street_address: streetAddress.trim(),
       lawn_size: lawnSize,
     });
+
     router.push("/step2");
   };
 

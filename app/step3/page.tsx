@@ -1,31 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { TIME_SLOTS, type TimeSlot } from "@/lib/types";
-import { getDraft, saveDraft } from "@/lib/storage";
-import StepHeader from "@/components/StepHeader";
-import TextField from "@/components/TextField";
+import { SubmitEvent, useState } from "react";
+
 import RadioCardGroup from "@/components/RadioCardGroup";
+import StepHeader from "@/components/StepHeader";
 import StepNav from "@/components/StepNav";
+import TextField from "@/components/TextField";
+import { getDraft, saveDraft } from "@/lib/storage";
+import { TIME_SLOTS, type TimeSlot } from "@/lib/types";
 
 export default function Step3Page() {
   const router = useRouter();
+  const currentDraft = getDraft();
 
-  const [serviceDate, setServiceDate] = useState("");
-  const [timeSlot, setTimeSlot] = useState<TimeSlot>(TIME_SLOTS[0].value);
+  const [serviceDate, setServiceDate] = useState(
+    currentDraft.service_date ?? "",
+  );
+  const [timeSlot, setTimeSlot] = useState<TimeSlot>(
+    (currentDraft.time_slot as TimeSlot) ?? TIME_SLOTS[0].value,
+  );
 
-  // Restore previously entered values when the user comes back to this step.
-  // One-time sync from localStorage into state (see step 1 for the rationale).
-  useEffect(() => {
-    const draft = getDraft();
-    /* eslint-disable react-hooks/set-state-in-effect */
-    if (draft.service_date) setServiceDate(draft.service_date);
-    if (draft.time_slot) setTimeSlot(draft.time_slot);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!serviceDate) {
       alert("Please select a service date.");
@@ -35,7 +31,7 @@ export default function Step3Page() {
     saveDraft({ service_date: serviceDate, time_slot: timeSlot });
     // TODO: submit the completed draft with a server action (createBooking),
     // then clearDraft() on success.
-    router.push("/success");
+    router.push("/");
   };
 
   return (
@@ -67,7 +63,10 @@ export default function Step3Page() {
           options={TIME_SLOTS}
         />
 
-        <StepNav onBack={() => router.push("/step2")} nextLabel="Complete Booking →" />
+        <StepNav
+          onBack={() => router.push("/step2")}
+          nextLabel="Complete Booking →"
+        />
       </form>
     </div>
   );

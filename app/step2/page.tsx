@@ -1,38 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getDraft, saveDraft } from "@/lib/storage";
+import { SubmitEvent, useState } from "react";
+
 import StepHeader from "@/components/StepHeader";
-import TextField from "@/components/TextField";
 import StepNav from "@/components/StepNav";
+import TextField from "@/components/TextField";
+import { getDraft, saveDraft } from "@/lib/storage";
 
 export default function Step2Page() {
   const router = useRouter();
+  const currentDraft = getDraft();
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [fullName, setFullName] = useState(currentDraft.full_name ?? "");
+  const [email, setEmail] = useState(currentDraft.email ?? "");
+  const [phone, setPhone] = useState(currentDraft.phone ?? "");
 
-  // Restore previously entered values when the user navigates back and forth.
-  // One-time sync from localStorage into state (see step 1 for the rationale).
-  useEffect(() => {
-    const draft = getDraft();
-    /* eslint-disable react-hooks/set-state-in-effect */
-    if (draft.full_name) setFullName(draft.full_name);
-    if (draft.email) setEmail(draft.email);
-    if (draft.phone) setPhone(draft.phone);
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
-
-  const handleNext = (e: React.FormEvent) => {
+  const handleNext = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
       alert("Please fill in all customer information fields.");
       return;
     }
 
-    saveDraft({ full_name: fullName.trim(), email: email.trim(), phone: phone.trim() });
+    saveDraft({
+      full_name: fullName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+    });
+
     router.push("/step3");
   };
 
