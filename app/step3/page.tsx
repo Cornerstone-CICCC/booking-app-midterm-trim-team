@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TIME_SLOTS } from "@/lib/types";
-import { createBooking } from "../actions/booking";
+import { createBooking, getBookedSlotsByDate } from "../actions/booking";
 
 export default function Step3Page() {
   const router = useRouter();
@@ -15,6 +15,11 @@ export default function Step3Page() {
   const [serviceDate, setServiceDate] = useState(defaultDate);
   const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0].value);
   const [note, setNote] = useState("");
+  const [availability, setAvailability] = useState<{ [key: string]: boolean }>({
+    morning: false,
+    afternoon: false,
+    full_day: false,
+  });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -26,6 +31,24 @@ export default function Step3Page() {
       if (parsed.note) setNote(parsed.note);
     }
   }, []);
+
+  useEffect(() => {
+    async function fetchAvailability() {
+      if (!serviceDate) return;
+      const result = await getBookedSlotsByDate(serviceDate);
+      if (result.success) {
+        setAvailability(result.availability);
+        
+        if (result.availability[timeSlot]) {
+          const availableSlot = TIME_SLOTS.find(slot => !result.availability[slot.value]);
+          if (availableSlot) {
+            setTimeSlot(availableSlot.value);
+          }
+        }
+      }
+    }
+    fetchAvailability();
+  }, [serviceDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,28 +117,43 @@ export default function Step3Page() {
             Time Slot
           </label>
           <div className="grid grid-cols-1 gap-2.5">
-            {TIME_SLOTS.map((slot) => (
-              <label
-                key={slot.value}
-                className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
-                  timeSlot === slot.value
-                    ? "border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="time_slot"
-                  value={slot.value}
-                  checked={timeSlot === slot.value}
-                  onChange={() => setTimeSlot(slot.value)}
-                  className="text-emerald-600 focus:ring-emerald-500"
-                />
-                <span className="ml-3 text-sm font-medium text-gray-900">
-                  {slot.label}
-                </span>
-              </label>
-            ))}
+            {TIME_SLOTS.map((slot) => {
+              const isBooked = availability[slot.value] === true;
+
+              return (
+                <label
+                  key={slot.value}
+                  className={`flex items-center justify-between p-3 border rounded-lg transition-all ${
+                    isBooked
+                      ? "bg-gray-100 border-gray-200 opacity-60 cursor-not-allowed"
+                      : timeSlot === slot.value
+                      ? "border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600 cursor-pointer"
+                      : "border-gray-200 hover:border-gray-300 cursor-pointer"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      name="time_slot"
+                      value={slot.value}
+                      checked={timeSlot === slot.value}
+                      disabled={isBooked}
+                      onChange={() => setTimeSlot(slot.value)}
+                      className="text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="ml-3 text-sm font-medium text-gray-900">
+                      {slot.label}
+                    </span>
+                  </div>
+
+                  {isBooked && (
+                    <span className="text-xs font-semibold text-red-500 bg-red-50 px-2 py-1 rounded-md">
+                      Already Booked
+                    </span>
+                  )}
+                </label>
+              );
+            })}
           </div>
         </div>
 

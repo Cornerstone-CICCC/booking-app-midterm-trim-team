@@ -53,3 +53,30 @@ export async function createBooking(formData: {
     return { success: false, error: errorMessage };
   }
 }
+
+export async function getBookedSlotsByDate(serviceDate: string) {
+  try {
+    const result = await sql`
+      SELECT time_slot 
+      FROM bookings 
+      WHERE service_date = ${serviceDate} 
+        AND status != 'cancelled'
+    `;
+    
+    const bookedSet = new Set(result.map((row) => row.time_slot));
+
+    const availability = {
+      morning: bookedSet.has("morning"),
+      afternoon: bookedSet.has("afternoon"),
+      full_day: bookedSet.has("full_day"),
+    };
+
+    return { success: true, availability };
+  } catch (error: any) {
+    console.error("Failed to fetch booked slots:", error?.message);
+    return { 
+      success: false, 
+      availability: { morning: false, afternoon: false, full_day: false } 
+    };
+  }
+}
