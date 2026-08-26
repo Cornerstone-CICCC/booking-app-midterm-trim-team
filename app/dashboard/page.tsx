@@ -26,7 +26,7 @@ function groupByDate(bookings: Booking[]) {
   return groups;
 }
 
-function splitForStaff(bookings: Booking[], today: string) {
+function splitUpcomingAndPast(bookings: Booking[], today: string) {
   const upcoming = bookings
     .filter((booking) => booking.service_date >= today)
     .sort((a, b) => a.service_date.localeCompare(b.service_date) || bySlot(a, b));
@@ -52,7 +52,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   const pendingCount = bookings.filter((booking) => booking.status === "pending").length;
   const visible = pendingOnly ? bookings.filter((booking) => booking.status === "pending") : bookings;
   const today = todayInVancouver();
-  const { upcoming, past } = splitForStaff(visible, today);
+  const { upcoming, past } = splitUpcomingAndPast(visible, today);
 
   return (
     <div>
@@ -82,7 +82,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         </p>
       </div>
 
-      {/* // TO-DO: Add search filters */}
+      {/* TO-DO: Add search filters */}
 
       {bookings.length === 0 ? (
         <div className="border border-gray-200 rounded-lg px-4 py-12 text-center text-sm text-gray-500 bg-white">

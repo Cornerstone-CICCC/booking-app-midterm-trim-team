@@ -6,7 +6,6 @@ import StatusBadge from "@/components/StatusBadge";
 import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
 
 // One booking in the staff dashboard.
-// TO-DO: Confirm / cancel / update actions are owned by another teammate.
 
 function rowAccent(status: string) {
   if (status === "pending") return "border-l-amber-400";
@@ -74,13 +73,7 @@ export default function BookingRow({ booking }: { booking: Booking }) {
         <p className="text-gray-500 mt-0.5">{lawnSizeLabel(booking.lawn_size)}</p>
       </td>
       <td className="px-4 py-2.5 align-middle text-right whitespace-nowrap">
-        <Link
-          href={href}
-          className="text-sm text-gray-500 hover:text-gray-900"
-          onClick={(event) => event.stopPropagation()}
-        >
-          Details
-        </Link>
+        <span className="text-sm text-gray-500">Details</span>
       </td>
     </tr>
   );
