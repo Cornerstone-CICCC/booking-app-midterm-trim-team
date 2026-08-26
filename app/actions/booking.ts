@@ -1,7 +1,7 @@
 "use server";
 
 import { sql } from "@/lib/db";
-import type { Booking, TimeSlot } from "@/lib/types";
+import type { TimeSlot } from "@/lib/types";
 
 export type CreateBookingInput = {
   city: string;
@@ -17,7 +17,7 @@ export type CreateBookingInput = {
 
 export type CreateBookingResult = { success: true } | { success: false; error: string };
 
-export type SlotAvailability = {
+export type BookedSlots = {
   morning: boolean;
   afternoon: boolean;
   full_day: boolean;
@@ -64,6 +64,9 @@ export async function createBooking(formData: CreateBookingInput): Promise<Creat
       };
     }
 
+    // TO-DO: We should not allow booking a full day slot if there's already a booking for the morning or afternoon.
+    // TO-DO: We should not allow booking a morning or afternoon slot if there's already a booking for the full day.
+
     return {
       success: false,
       error: message ?? "Database insertion failed",
@@ -73,9 +76,9 @@ export async function createBooking(formData: CreateBookingInput): Promise<Creat
 
 export async function getBookedSlotsByDate(serviceDate: string): Promise<{
   success: boolean;
-  availability: SlotAvailability;
+  bookedSlots: BookedSlots;
 }> {
-  const emptyAvailability: SlotAvailability = {
+  const noBookedSlots: BookedSlots = {
     morning: false,
     afternoon: false,
     full_day: false,
@@ -90,18 +93,17 @@ export async function getBookedSlotsByDate(serviceDate: string): Promise<{
     `;
 
     const bookedSet = new Set(result.map((row) => row.time_slot as string));
-
-    return {
-      success: true,
-      availability: {
-        morning: bookedSet.has("morning"),
-        afternoon: bookedSet.has("afternoon"),
-        full_day: bookedSet.has("full_day"),
-      },
+    const bookedSlots: BookedSlots = {
+      morning: bookedSet.has("morning"),
+      afternoon: bookedSet.has("afternoon"),
+      full_day: bookedSet.has("full_day"),
     };
+
+    return { success: true, bookedSlots };
+
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : undefined;
-    console.error("Failed to fetch booked slots:", message);
-    return { success: false, availability: emptyAvailability };
+    console.error("getBookedSlotsByDate failed:", message, error);
+    return { success: false, bookedSlots: noBookedSlots };
   }
 }
