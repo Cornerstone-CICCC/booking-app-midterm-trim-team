@@ -8,7 +8,7 @@ import DateField from "@/components/DateField";
 import RadioCardGroup from "@/components/RadioCardGroup";
 import StepHeader from "@/components/StepHeader";
 import StepNav from "@/components/StepNav";
-import { getDraft, saveDraft } from "@/lib/storage";
+import { clearDraft, getDraft, saveDraft } from "@/lib/storage";
 import { TIME_SLOTS, type TimeSlot } from "@/lib/types";
 
 export default function Step3Page() {
@@ -31,6 +31,7 @@ export default function Step3Page() {
     }
 
     saveDraft({ service_date: serviceDate, time_slot: timeSlot });
+    clearDraft();
     // TODO: submit the completed draft with a server action (createBooking),
     // then clearDraft() on success.
     router.push("/");
