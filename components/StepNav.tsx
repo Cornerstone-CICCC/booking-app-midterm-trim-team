@@ -1,6 +1,3 @@
-// The Back / Next button row at the bottom of each step. The Back button is
-// only shown when `onBack` is provided (step 1 has no previous step).
-
 type Props = {
   onBack?: () => void;
   nextLabel?: string;

@@ -1,7 +1,3 @@
-// A group of selectable "cards" backed by radio inputs. Used for lawn size
-// (with a hint line) and time slot (label only). Generic over the option value
-// type so callers keep their union types (LawnSize / TimeSlot) instead of string.
-
 type Option<T extends string> = { value: T; label: string; hint?: string };
 
 type Props<T extends string> = {
@@ -21,7 +17,9 @@ export default function RadioCardGroup<T extends string>({
 }: Props<T>) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label}
+      </label>
       <div className="grid grid-cols-1 gap-2">
         {options.map((option) => {
           const selected = value === option.value;
@@ -43,8 +41,14 @@ export default function RadioCardGroup<T extends string>({
                 className={`${option.hint ? "mt-1 " : ""}text-emerald-600 focus:ring-emerald-500`}
               />
               <div className="ml-3">
-                <span className="block text-sm font-medium text-gray-900">{option.label}</span>
-                {option.hint && <span className="block text-xs text-gray-500">{option.hint}</span>}
+                <span className="block text-sm font-medium text-gray-900">
+                  {option.label}
+                </span>
+                {option.hint && (
+                  <span className="block text-xs text-gray-500">
+                    {option.hint}
+                  </span>
+                )}
               </div>
             </label>
           );
