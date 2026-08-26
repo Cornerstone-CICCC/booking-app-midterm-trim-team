@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
 import { toast } from "sonner";
 
+import { createBooking } from "@/app/actions/booking";
 import DateField from "@/components/DateField";
 import RadioCardGroup from "@/components/RadioCardGroup";
 import StepHeader from "@/components/StepHeader";
@@ -22,19 +23,50 @@ export default function Step3Page() {
     (currentDraft.time_slot as TimeSlot) ?? TIME_SLOTS[0].value,
   );
 
-  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!serviceDate) {
-      toast.error("Please select a service date.");
+    if (!serviceDate || !timeSlot) {
+      toast.error("Please select a service date and a time slot.");
       return;
     }
 
-    saveDraft({ service_date: serviceDate, time_slot: timeSlot });
-    clearDraft();
-    // TODO: submit the completed draft with a server action (createBooking),
-    // then clearDraft() on success.
-    router.push("/");
+    const draft = saveDraft({
+      service_date: serviceDate,
+      time_slot: timeSlot,
+    });
+
+    if (
+      !draft.city ||
+      !draft.street_address ||
+      !draft.lawn_size ||
+      !draft.full_name ||
+      !draft.email ||
+      !draft.phone
+    ) {
+      toast.error("Please complete all booking steps before submitting.");
+      return;
+    }
+
+    const result = await createBooking({
+      city: draft.city,
+      street_address: draft.street_address,
+      lawn_size: draft.lawn_size,
+      full_name: draft.full_name,
+      email: draft.email,
+      phone: draft.phone,
+      service_date: serviceDate,
+      time_slot: timeSlot,
+    });
+
+    if (result.success) {
+      clearDraft();
+      toast.success("Booking completed successfully!");
+      router.push("/");
+      return;
+    }
+
+    toast.error(result.error);
   };
 
   return (
