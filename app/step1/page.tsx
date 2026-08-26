@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CITIES, LAWN_SIZES } from "@/lib/types";
 
@@ -11,6 +11,10 @@ export default function Step1Page() {
   const [streetAddress, setStreetAddress] = useState("");
   const [lawnSize, setLawnSize] = useState(LAWN_SIZES[0].value);
 
+  useEffect(() => {
+    localStorage.removeItem("bookingData");
+  }, []);
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     if (!streetAddress.trim()) {
@@ -18,7 +22,12 @@ export default function Step1Page() {
       return;
     }
 
-    console.log({ city, streetAddress, lawnSize });
+    const currentData = JSON.parse(localStorage.getItem("bookingData") || "{}");
+    localStorage.setItem(
+      "bookingData",
+      JSON.stringify({ ...currentData, city, streetAddress, lawnSize })
+    );
+
     router.push("/step2");
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Step2Page() {
@@ -10,6 +10,16 @@ export default function Step2Page() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
+  useEffect(() => {
+    const savedData = localStorage.getItem("bookingData");
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      if (parsed.fullName) setFullName(parsed.fullName);
+      if (parsed.email) setEmail(parsed.email);
+      if (parsed.phone) setPhone(parsed.phone);
+    }
+  }, []);
+
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
@@ -17,7 +27,12 @@ export default function Step2Page() {
       return;
     }
 
-    console.log({ fullName, email, phone });
+    const currentData = JSON.parse(localStorage.getItem("bookingData") || "{}");
+    localStorage.setItem(
+      "bookingData",
+      JSON.stringify({ ...currentData, fullName, email, phone })
+    );
+
     router.push("/step3");
   };
 

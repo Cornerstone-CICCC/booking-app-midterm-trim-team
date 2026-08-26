@@ -1,25 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { TIME_SLOTS } from "@/lib/types";
+import { createBooking } from "../actions/booking";
 
 export default function Step3Page() {
   const router = useRouter();
   
-  const [serviceDate, setServiceDate] = useState("");
-  const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0].value);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const defaultDate = tomorrow.toISOString().split("T")[0];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [serviceDate, setServiceDate] = useState(defaultDate);
+  const [timeSlot, setTimeSlot] = useState(TIME_SLOTS[0].value);
+  const [note, setNote] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("bookingData");
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      if (parsed.serviceDate) setServiceDate(parsed.serviceDate);
+      if (parsed.timeSlot) setTimeSlot(parsed.timeSlot);
+      if (parsed.note) setNote(parsed.note);
+    }
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!serviceDate) {
       alert("Please select a service date.");
       return;
     }
 
-    console.log({ serviceDate, timeSlot });
-    alert("Booking completed successfully!");
-    router.push("/");
+    const currentData = JSON.parse(localStorage.getItem("bookingData") || "{}");
+    
+    const finalPayload = {
+      ...currentData,
+      serviceDate,
+      timeSlot,
+      note,
+    };
+
+    setLoading(true);
+
+    const result = await createBooking(finalPayload);
+
+    if (result.success) {
+      localStorage.removeItem("bookingData");
+      alert("Booking completed successfully!");
+      router.push("/");
+    } else {
+      alert(`Booking failed: ${result.error}`);
+      setLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -84,6 +119,19 @@ export default function Step3Page() {
           </div>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Special Instructions / Note (Optional)
+          </label>
+          <textarea
+            placeholder="e.g. Gate code 4455, big dog in backyard"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+          />
+        </div>
+
         <div className="pt-2 flex justify-between">
           <button
             type="button"
@@ -94,9 +142,10 @@ export default function Step3Page() {
           </button>
           <button
             type="submit"
-            className="px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+            disabled={loading}
+            className="px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50"
           >
-            Complete Booking &rarr;
+            {loading ? "Submitting..." : "Complete Booking \u2192"}
           </button>
         </div>
       </form>
