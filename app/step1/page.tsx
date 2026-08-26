@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
+import { toast } from "sonner";
 
 import RadioCardGroup from "@/components/RadioCardGroup";
 import SelectField from "@/components/SelectField";
@@ -29,7 +30,7 @@ export default function Step1Page() {
     e.preventDefault();
 
     if (!streetAddress.trim()) {
-      alert("Please enter your street address.");
+      toast.error("Please enter your street address.");
       return;
     }
 

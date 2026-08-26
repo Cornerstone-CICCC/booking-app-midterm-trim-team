@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
+import { toast } from "sonner";
 
 import StepHeader from "@/components/StepHeader";
 import StepNav from "@/components/StepNav";
@@ -20,7 +21,7 @@ export default function Step2Page() {
     e.preventDefault();
 
     if (!fullName.trim() || !email.trim() || !phone.trim()) {
-      alert("Please fill in all customer information fields.");
+      toast.error("Please fill in all customer information fields.");
       return;
     }
 

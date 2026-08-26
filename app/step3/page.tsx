@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SubmitEvent, useState } from "react";
+import { toast } from "sonner";
 
 import RadioCardGroup from "@/components/RadioCardGroup";
 import StepHeader from "@/components/StepHeader";
@@ -23,8 +24,9 @@ export default function Step3Page() {
 
   const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!serviceDate) {
-      alert("Please select a service date.");
+      toast.error("Please select a service date.");
       return;
     }
 
