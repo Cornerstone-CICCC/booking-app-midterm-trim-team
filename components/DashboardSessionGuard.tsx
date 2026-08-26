@@ -2,8 +2,7 @@
 
 import { useEffect } from "react";
 
-// After Sign out, the browser back button can restore a cached dashboard
-// page without asking the server. Reload so proxy / layout can send us to login.
+// Reload if the back button restores a cached dashboard page after logout.
 
 export default function DashboardSessionGuard() {
   useEffect(() => {

@@ -14,18 +14,11 @@ function Info({ label, children }: { label: string; children: React.ReactNode })
   );
 }
 
-function railTone(status: string) {
-  if (status === "pending") return "bg-amber-50 border-amber-100";
-  if (status === "completed") return "bg-blue-50 border-blue-100";
-  if (status === "cancelled") return "bg-red-50 border-red-100";
-  return "bg-green-50 border-green-100";
-}
-
-function railBorder(status: string) {
-  if (status === "pending") return "border-amber-100";
-  if (status === "completed") return "border-blue-100";
-  if (status === "cancelled") return "border-red-100";
-  return "border-green-100";
+function railClasses(status: string) {
+  if (status === "pending") return { wrap: "bg-amber-50 border-amber-100", card: "border-amber-100" };
+  if (status === "completed") return { wrap: "bg-blue-50 border-blue-100", card: "border-blue-100" };
+  if (status === "cancelled") return { wrap: "bg-red-50 border-red-100", card: "border-red-100" };
+  return { wrap: "bg-green-50 border-green-100", card: "border-green-100" };
 }
 
 export default async function BookingDetailPage({ params }: PageProps<"/dashboard/[id]">) {
@@ -46,8 +39,7 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
   const booking = rows[0];
   if (!booking) notFound();
 
-  const rail = railTone(booking.status);
-  const innerBorder = railBorder(booking.status);
+  const rail = railClasses(booking.status);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -90,8 +82,8 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
           </dl>
         </div>
 
-        <aside className={`flex flex-col gap-4 shrink-0 md:w-52 px-4 py-5 border-t md:border-t-0 md:border-l ${rail}`}>
-          <div className={`rounded-xl bg-white px-3 py-3 border ${innerBorder}`}>
+        <aside className={`flex flex-col gap-4 shrink-0 md:w-52 px-4 py-5 border-t md:border-t-0 md:border-l ${rail.wrap}`}>
+          <div className={`rounded-xl bg-white px-3 py-3 border ${rail.card}`}>
             <p className="text-xs text-gray-500 mb-2">Status</p>
             <StatusBadge status={booking.status} className="block w-full text-sm py-1.5 text-center" />
           </div>
