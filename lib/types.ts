@@ -1,6 +1,6 @@
 export type LawnSize = "small" | "medium" | "large" | "extra_large";
 export type TimeSlot = "morning" | "afternoon" | "full_day";
-export type BookingStatus = "pending" | "confirmed" | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 
 export type Booking = {
   id: number;
@@ -57,7 +57,8 @@ export const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
 export const STATUSES: { value: BookingStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancel" },
 ];
 
 // Small helpers so the UI can display something more human-readable
