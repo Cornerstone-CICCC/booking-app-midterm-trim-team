@@ -43,15 +43,30 @@ export default function Step3Page() {
     fetchBookedSlots();
   }, [serviceDate]);
 
-  // If no date is selected, all time slots are disabled.
-  // If a date is selected, only the booked time slots are disabled.
+  // Determine disabled time slots based on existing bookings and conflict rules
   const disabledValues = !serviceDate
     ? new Set(TIME_SLOTS.map((slot) => slot.value))
-    : new Set(
-        (Object.entries(bookedSlots) as [TimeSlot, boolean][])
-          .filter(([, booked]) => booked)
-          .map(([slot]) => slot),
-      );
+    : (() => {
+        const disabled = new Set<TimeSlot>();
+        const isMorningBooked = bookedSlots.morning;
+        const isAfternoonBooked = bookedSlots.afternoon;
+        const isFullDayBooked = bookedSlots.full_day;
+
+        if (isFullDayBooked) {
+          disabled.add("morning");
+          disabled.add("afternoon");
+          disabled.add("full_day");
+        }
+
+        if (isMorningBooked || isAfternoonBooked) {
+          disabled.add("full_day");
+        }
+
+        if (isMorningBooked) disabled.add("morning");
+        if (isAfternoonBooked) disabled.add("afternoon");
+
+        return disabled;
+      })();
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,6 +84,16 @@ export default function Step3Page() {
 
     if (bookedSlots[timeSlot]) {
       toast.error("That time slot is already booked. Please choose another.");
+      return;
+    }
+
+    if (timeSlot === "full_day" && (bookedSlots.morning || bookedSlots.afternoon)) {
+      toast.error("Full day cannot be booked when morning or afternoon slots are already taken.");
+      return;
+    }
+
+    if ((timeSlot === "morning" || timeSlot === "afternoon") && bookedSlots.full_day) {
+      toast.error("Morning or afternoon slots cannot be booked when the full day is already taken.");
       return;
     }
 

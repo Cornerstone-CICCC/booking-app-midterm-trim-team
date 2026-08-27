@@ -25,6 +25,33 @@ export type BookedSlots = {
 
 export async function createBooking(formData: CreateBookingInput): Promise<CreateBookingResult> {
   try {
+    // Check current booked slots for the requested date to prevent conflicts server-side
+    const bookedResult = await getBookedSlotsByDate(formData.service_date);
+    if (bookedResult.success) {
+      const { morning, afternoon, full_day } = bookedResult.bookedSlots;
+
+      if (formData.time_slot === "full_day" && (morning || afternoon)) {
+        return {
+          success: false,
+          error: "Full day cannot be booked when morning or afternoon slots are already taken.",
+        };
+      }
+
+      if ((formData.time_slot === "morning" || formData.time_slot === "afternoon") && full_day) {
+        return {
+          success: false,
+          error: "Morning or afternoon slots cannot be booked when the full day is already taken.",
+        };
+      }
+
+      if (bookedResult.bookedSlots[formData.time_slot]) {
+        return {
+          success: false,
+          error: "That time slot is already booked. Please choose another.",
+        };
+      }
+    }
+
     await sql`
       INSERT INTO bookings (
         city,
@@ -55,7 +82,6 @@ export async function createBooking(formData: CreateBookingInput): Promise<Creat
     const message = error instanceof Error ? error.message : undefined;
     console.error("Detailed DB Insert Error Message:", message);
 
-    // TO-DO: Not sure if the db will throw this error if the slot is already booked.
     if (message?.includes("bookings_one_per_slot")) {
       return {
         success: false,
@@ -63,9 +89,6 @@ export async function createBooking(formData: CreateBookingInput): Promise<Creat
           "An appointment already exists for this date and time slot. Please choose another slot.",
       };
     }
-
-    // TO-DO: We should not allow booking a full day slot if there's already a booking for the morning or afternoon.
-    // TO-DO: We should not allow booking a morning or afternoon slot if there's already a booking for the full day.
 
     return {
       success: false,
