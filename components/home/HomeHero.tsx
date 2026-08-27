@@ -1,28 +1,14 @@
 import Link from "next/link";
 
-// Full-bleed hero with a placeholder photo and a curved (half-circle) bottom.
-// w-screen + left-1/2/-translate-x-1/2 breaks out of the max-w-3xl <main>;
-// -mt-8 cancels the main's top padding so it sits directly under the header.
+import HeroCarousel from "./HeroCarousel";
 
 export default function HomeHero() {
   return (
-    <section
-      className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 overflow-hidden text-white"
-      style={{
-        borderBottomLeftRadius: "50% 56px",
-        borderBottomRightRadius: "50% 56px",
-      }}
-    >
-      {/* Placeholder photo — swap the URL for a real lawn/house image later. */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('https://picsum.photos/seed/trimteam-lawn/1600/700')",
-        }}
-      />
+    <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 overflow-hidden text-white">
+      <HeroCarousel />
       <div className="absolute inset-0 bg-linear-to-br from-emerald-800/85 to-green-700/70" />
 
-      <div className="relative mx-auto max-w-3xl px-6 pt-16 pb-24 text-center md:pt-24 md:pb-32">
+      <div className="relative mx-auto max-w-3xl px-6 pt-16 pb-28 text-center md:pt-24 md:pb-36">
         <p className="text-sm font-semibold uppercase tracking-wider text-emerald-100">
           Lawn care in Metro Vancouver
         </p>
@@ -40,6 +26,15 @@ export default function HomeHero() {
           Book a service →
         </Link>
       </div>
+
+      <svg
+        className="absolute inset-x-0 bottom-0 h-16 w-full fill-white"
+        viewBox="0 0 1440 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path d="M0,0 Q720,100 1440,0 L1440,100 L0,100 Z" />
+      </svg>
     </section>
   );
 }
