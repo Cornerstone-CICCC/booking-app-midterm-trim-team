@@ -115,6 +115,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                 <col className="w-28" />
                 <col className="w-[22%]" />
                 <col />
+                <col className="w-16" />
                 <col className="w-20" />
               </colgroup>
               <thead className="bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500">
@@ -123,7 +124,8 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                   <th className="px-4 py-2">Status</th>
                   <th className="px-4 py-2">Customer</th>
                   <th className="px-4 py-2">Job</th>
-                  <th className="px-4 py-2 text-right">Details</th>
+                  <th className="px-4 py-2">Edit</th>
+                  <th className="px-4 py-2">Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -138,7 +140,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
                 {past.length > 0 && (
                   <>
                     <tr>
-                      <th colSpan={5} className="px-4 pt-5 pb-1 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
+                      <th colSpan={6} className="px-4 pt-5 pb-1 text-left text-xs font-medium uppercase tracking-wide text-gray-400">
                         Past
                       </th>
                     </tr>
@@ -158,9 +160,9 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
 function DayList({ label, bookings }: { label: string; bookings: Booking[] }) {
   return (
-    <section className="border border-gray-200 rounded-lg overflow-hidden bg-white">
-      <h2 className="px-3 py-2 text-xs font-medium text-gray-500 bg-gray-50 border-b border-gray-200">{label}</h2>
-      <div className="divide-y divide-gray-100">
+    <section>
+      <h2 className="px-1 pb-2 text-xs font-medium text-gray-500">{label}</h2>
+      <div className="space-y-2">
         {bookings.map((booking) => (
           <BookingCard key={booking.id} booking={booking} />
         ))}
@@ -182,7 +184,7 @@ function DayGroup({
     <>
       <tr>
         <th
-          colSpan={5}
+          colSpan={6}
           className={`px-4 py-2 text-left text-xs font-medium text-gray-500 bg-gray-50 ${first ? "" : "border-t border-gray-200"}`}
         >
           {label}
