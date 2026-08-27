@@ -1,6 +1,3 @@
-// Email lookup form. Plain GET form → submits to "/?email=...", so no client
-// JS is needed. `email` seeds the input after a search (defaultValue).
-
 export default function BookingSearch({ email }: { email: string }) {
   return (
     <form method="get" className="mt-4 flex flex-col gap-2 sm:flex-row">

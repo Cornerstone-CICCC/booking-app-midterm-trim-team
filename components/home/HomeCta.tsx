@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-// The closing call-to-action banner.
-
 export default function HomeCta() {
   return (
     <section className="rounded-2xl bg-emerald-50 p-8 text-center md:p-10">

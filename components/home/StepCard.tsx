@@ -1,5 +1,3 @@
-// One card in the "How it works" section.
-
 export default function StepCard({
   step,
   icon,

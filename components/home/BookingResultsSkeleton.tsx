@@ -1,5 +1,3 @@
-// Loading placeholder shown by <Suspense> while BookingResults is fetching.
-
 export default function BookingResultsSkeleton() {
   return (
     <ul className="mt-5 divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-100">

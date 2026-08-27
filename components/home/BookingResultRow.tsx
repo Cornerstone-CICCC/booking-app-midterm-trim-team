@@ -2,8 +2,6 @@ import StatusBadge from "@/components/StatusBadge";
 import { formatDate } from "@/lib/format";
 import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
 
-// A single booking row in the lookup results.
-
 export default function BookingResultRow({ booking }: { booking: Booking }) {
   return (
     <li className="flex items-start justify-between gap-3 p-3">

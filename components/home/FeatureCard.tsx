@@ -1,5 +1,3 @@
-// One card in the "Why Trim Team" section.
-
 export default function FeatureCard({
   icon,
   title,

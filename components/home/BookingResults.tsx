@@ -2,10 +2,6 @@ import { sql } from "@/lib/db";
 import { type Booking } from "@/lib/types";
 import BookingResultRow from "./BookingResultRow";
 
-// Async server component: fetches the bookings for `email` and renders them.
-// The fetch lives here (inside the <Suspense> boundary in page.tsx) so the
-// loading fallback can show while the query is in flight.
-
 export default async function BookingResults({ email }: { email: string }) {
   const bookings = (await sql`
     select
