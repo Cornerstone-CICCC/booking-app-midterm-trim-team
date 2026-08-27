@@ -6,12 +6,8 @@ import { searchDB } from './actions/dbComm'
 
 let bookings = (await sql`
       select
-        id, city, street_address, lawn_size, full_name, email, phone,
-        to_char(service_date, 'YYYY-MM-DD') as service_date,
-        time_slot, status, note, created_at, updated_at
       from bookings
       where email = 'x'
-      order by service_date asc, time_slot asc
     `) as Booking[]
 
 export default async function HomePage() {

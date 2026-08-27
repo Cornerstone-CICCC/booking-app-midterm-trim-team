@@ -63,14 +63,16 @@ WHERE id= ${id};`
 }
 
 export async function searchDB(email: string) {
-  console.log('3333333')
+  const today = new Date()
+
+  console.log(today)
   const books = (await sql`
       select
         id, city, street_address, lawn_size, full_name, email, phone,
         to_char(service_date, 'YYYY-MM-DD') as service_date,
         time_slot, status, note, created_at, updated_at
       from bookings
-     where email =${email}
+     where email =${email} and service_date >= ${today}
       order by service_date asc, time_slot asc
     `) as Booking[]
   revalidatePath(`/`)
