@@ -20,18 +20,19 @@ const NO_BOOKED_SLOTS: BookedSlots = {
 
 export default function Step3Page() {
   const router = useRouter();
-  const currentDraft = getDraft();
 
-  const [serviceDate, setServiceDate] = useState(
-    currentDraft.service_date ?? "",
-  );
-  const [timeSlot, setTimeSlot] = useState<TimeSlot>(
-    (currentDraft.time_slot as TimeSlot) ?? TIME_SLOTS[0].value,
-  );
+  const [serviceDate, setServiceDate] = useState("");
+  const [timeSlot, setTimeSlot] = useState<TimeSlot | "">("");
   const [bookedSlots, setBookedSlots] = useState<BookedSlots>(NO_BOOKED_SLOTS);
 
   useEffect(() => {
-    // If no date is selected, clear booked-slot state (UI disables all slots separately).
+    const currentDraft = getDraft();
+    if (currentDraft.service_date) setServiceDate(currentDraft.service_date);
+    if (currentDraft.time_slot) setTimeSlot(currentDraft.time_slot as TimeSlot);
+  }, []);
+
+  useEffect(() => {
+    // If no date is selected, skip the fetch (UI disables all slots separately).
     if (!serviceDate) return;
 
     async function fetchBookedSlots() {
@@ -54,9 +55,15 @@ export default function Step3Page() {
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    toast.dismiss();
 
-    if (!serviceDate || !timeSlot) {
-      toast.error("Please select a service date and a time slot.");
+    if (!serviceDate) {
+      toast.error("Please select a service date.");
+      return;
+    }
+
+    if (!timeSlot) {
+      toast.error("Please select a time slot.");
       return;
     }
 
@@ -67,7 +74,7 @@ export default function Step3Page() {
 
     const draft = saveDraft({
       service_date: serviceDate,
-      time_slot: timeSlot,
+      time_slot: timeSlot as TimeSlot,
     });
 
     if (
@@ -90,7 +97,7 @@ export default function Step3Page() {
       email: draft.email,
       phone: draft.phone,
       service_date: serviceDate,
-      time_slot: timeSlot,
+      time_slot: timeSlot as TimeSlot,
     });
 
     if (result.success) {
