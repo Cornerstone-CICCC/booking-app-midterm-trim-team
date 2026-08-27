@@ -31,11 +31,8 @@ export default function Step3Page() {
   const [bookedSlots, setBookedSlots] = useState<BookedSlots>(NO_BOOKED_SLOTS);
 
   useEffect(() => {
-    if (!serviceDate) {
-      // If no date is selected, clear booked-slot state (UI disables all slots separately).
-      setBookedSlots(NO_BOOKED_SLOTS);
-      return;
-    }
+    // If no date is selected, clear booked-slot state (UI disables all slots separately).
+    if (!serviceDate) return;
 
     async function fetchBookedSlots() {
       const result = await getBookedSlotsByDate(serviceDate);

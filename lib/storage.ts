@@ -2,9 +2,7 @@ import type { Booking } from "./types";
 
 const STORAGE_KEY = "trim_team_booking_draft";
 
-export type BookingDraft = Partial<
-  Pick<
-    Booking,
+export type BookingDraft = Partial<Pick<Booking,
     | "city"
     | "street_address"
     | "lawn_size"
@@ -20,7 +18,7 @@ export function getDraft(): BookingDraft {
   if (typeof window === "undefined") return {};
 
   try {
-    const draft = localStorage.getItem(STORAGE_KEY);
+    const draft = sessionStorage.getItem(STORAGE_KEY);
     return draft ? JSON.parse(draft) : {};
   } catch {
     return {};
@@ -32,7 +30,7 @@ export function saveDraft(draft: BookingDraft): BookingDraft {
 
   try {
     const updatedDraft = { ...getDraft(), ...draft };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDraft));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDraft));
     return updatedDraft;
   } catch {
     return {};
@@ -42,5 +40,5 @@ export function saveDraft(draft: BookingDraft): BookingDraft {
 export function clearDraft(): void {
   if (typeof window === "undefined") return;
 
-  localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(STORAGE_KEY);
 }
