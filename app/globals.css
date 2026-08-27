@@ -6,6 +6,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-input {
-  field-sizing: content;
+.rdp-fullwidth .rdp-months,
+.rdp-fullwidth .rdp-month,
+.rdp-fullwidth .rdp-month_grid {
+  width: 100%;
+}
+.rdp-fullwidth .rdp-month_grid {
+  table-layout: fixed;
+}
+.rdp-fullwidth .rdp-day,
+.rdp-fullwidth .rdp-weekday {
+  width: auto;
+}
+.rdp-fullwidth .rdp-day_button {
+  width: 100%;
+  max-width: none;
 }
