@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { SubmitEvent, useState } from "react";
+import { SubmitEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import StepHeader from "@/components/StepHeader";
@@ -11,21 +11,40 @@ import { getDraft, saveDraft } from "@/lib/storage";
 
 export default function Step2Page() {
   const router = useRouter();
-  const currentDraft = getDraft();
 
-  const [fullName, setFullName] = useState(currentDraft.full_name ?? "");
-  const [email, setEmail] = useState(currentDraft.email ?? "");
-  const [phone, setPhone] = useState(currentDraft.phone ?? "");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    const currentDraft = getDraft();
+    if (currentDraft.full_name) setFullName(currentDraft.full_name);
+    if (currentDraft.email) setEmail(currentDraft.email);
+    if (currentDraft.phone) setPhone(currentDraft.phone);
+  }, []);
 
   const handleNext = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    toast.dismiss();
 
-    if (!fullName.trim() || !email.trim() || !phone.trim()) {
-      toast.error("Please fill in all customer information fields.");
+    if (!fullName.trim()) {
+      toast.error("Please enter your full name.");
       return;
     }
 
+    if (!email.trim()) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    if (!phone.trim()) {
+      toast.error("Please enter your phone number.");
+      return;
+    }
+
+    const currentDraft = getDraft();
     saveDraft({
+      ...currentDraft,
       full_name: fullName.trim(),
       email: email.trim(),
       phone: phone.trim(),
@@ -53,7 +72,6 @@ export default function Step2Page() {
           placeholder="e.g. John Doe"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          required
         />
 
         <TextField
@@ -63,7 +81,6 @@ export default function Step2Page() {
           placeholder="e.g. john@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
         />
 
         <TextField
@@ -73,7 +90,6 @@ export default function Step2Page() {
           placeholder="e.g. 6045551234"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          required
         />
 
         <StepNav onBack={() => router.push("/step1")} />
