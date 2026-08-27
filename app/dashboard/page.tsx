@@ -4,8 +4,6 @@ import { sql } from '@/lib/db'
 import { formatDate } from '@/lib/format'
 import { lawnSizeLabel, timeSlotLabel, type Booking } from '@/lib/types'
 
-// The staff dashboard: every booking, filterable, with confirm/cancel buttons.
-
 export default async function DashboardPage() {
   const bookings = (await sql`
     select
@@ -19,8 +17,6 @@ export default async function DashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Bookings</h1>
-
-      {/* // TO-DO: Add search filters */}
 
       <p className="text-sm text-gray-600 mb-2">{bookings.length} booking(s)</p>
 

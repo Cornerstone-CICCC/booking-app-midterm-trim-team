@@ -3,7 +3,6 @@
 import { sql } from '@/lib/db'
 import { Booking } from '@/lib/types'
 import { revalidatePath } from 'next/cache'
-import { emit } from 'process'
 
 export async function bookingsDB(id: number) {
   const DBresult = (await sql`
@@ -71,7 +70,7 @@ export async function searchDB(email: string) {
         to_char(service_date, 'YYYY-MM-DD') as service_date,
         time_slot, status, note, created_at, updated_at
       from bookings
-     
+     where email =${email}
       order by service_date asc, time_slot asc
     `) as Booking[]
   revalidatePath(`/`)

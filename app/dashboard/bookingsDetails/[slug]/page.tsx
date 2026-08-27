@@ -2,7 +2,6 @@ import { timeSlotLabel } from '@/lib/types'
 import { formatDate } from '@/lib/format'
 import StatusBadge from '@/components/StatusBadge'
 import { confirmDB, bookingsDB, cancelDB, updateDB } from '@/app/actions/dbComm'
-import Form from 'next/form'
 
 export default async function bookingsDetailsPage({
   params,
