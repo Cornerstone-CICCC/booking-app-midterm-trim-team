@@ -3,7 +3,7 @@ import { type City } from "@/lib/types";
 type Props = {
   label: string;
   name: string;
-  value: City;
+  value: City | "";
   onChange: (value: City) => void;
   options: readonly string[];
 };
@@ -28,8 +28,13 @@ export default function SelectField({
         name={name}
         value={value}
         onChange={(e) => onChange(e.target.value as City)}
-        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+        className={`w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white ${
+          value === "" ? "text-gray-500" : "text-gray-900"
+        }`}
       >
+        <option value="" disabled>
+          Select your city...
+        </option>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
