@@ -160,9 +160,9 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
 
 function DayList({ label, bookings }: { label: string; bookings: Booking[] }) {
   return (
-    <section className="border border-gray-200 rounded-lg overflow-hidden bg-white">
-      <h2 className="px-3 py-2 text-xs font-medium text-gray-500 bg-gray-50 border-b border-gray-200">{label}</h2>
-      <div className="divide-y divide-gray-100">
+    <section>
+      <h2 className="px-1 pb-2 text-xs font-medium text-gray-500">{label}</h2>
+      <div className="space-y-2">
         {bookings.map((booking) => (
           <BookingCard key={booking.id} booking={booking} />
         ))}

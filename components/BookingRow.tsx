@@ -16,25 +16,27 @@ export function BookingCard({ booking }: { booking: Booking }) {
   const where = `${booking.street_address}, ${booking.city}`;
 
   return (
-    <div className={`border-l-4 ${rowAccent(booking.status)} bg-white px-3 py-3`}>
-      <div className="min-w-0">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-sm font-medium text-gray-900 whitespace-nowrap">{timeSlotLabel(booking.time_slot)}</p>
-          <StatusBadge status={booking.status} className="shrink-0" />
+    <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+      <div className={`border-l-4 ${rowAccent(booking.status)} px-3 py-3`}>
+        <div className="min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">{timeSlotLabel(booking.time_slot)}</p>
+            <StatusBadge status={booking.status} className="shrink-0" />
+          </div>
+          <p className="mt-1 text-sm font-medium text-gray-900 truncate">{booking.full_name}</p>
+          <p className="text-sm text-gray-600 truncate">{where}</p>
+          <p className="text-sm text-gray-500">
+            {booking.phone} · {lawnSizeLabel(booking.lawn_size)}
+          </p>
+          <p className="mt-2 flex gap-6 text-sm">
+            <Link href={editHref} className="text-gray-500 hover:text-gray-900">
+              Edit
+            </Link>
+            <Link href={detailsHref} className="text-gray-500 hover:text-gray-900">
+              Details
+            </Link>
+          </p>
         </div>
-        <p className="mt-1 text-sm font-medium text-gray-900 truncate">{booking.full_name}</p>
-        <p className="text-sm text-gray-600 truncate">{where}</p>
-        <p className="text-sm text-gray-500">
-          {booking.phone} · {lawnSizeLabel(booking.lawn_size)}
-        </p>
-        <p className="mt-2 flex gap-6 text-sm">
-          <Link href={editHref} className="text-gray-500 hover:text-gray-900">
-            Edit
-          </Link>
-          <Link href={detailsHref} className="text-gray-500 hover:text-gray-900">
-            Details
-          </Link>
-        </p>
       </div>
     </div>
   );
@@ -46,7 +48,7 @@ export default function BookingRow({ booking }: { booking: Booking }) {
   const where = `${booking.street_address}, ${booking.city}`;
 
   return (
-    <tr className="bg-white">
+    <tr className="bg-white border-b border-gray-100 hover:bg-gray-50">
       <td className={`px-4 py-2.5 align-middle whitespace-nowrap border-l-4 ${rowAccent(booking.status)}`}>
         {timeSlotLabel(booking.time_slot)}
       </td>
