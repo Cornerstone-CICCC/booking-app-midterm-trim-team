@@ -25,7 +25,6 @@ export type BookedSlots = {
 
 export async function createBooking(formData: CreateBookingInput): Promise<CreateBookingResult> {
   try {
-    // Check current booked slots for the requested date to prevent conflicts server-side
     const bookedResult = await getBookedSlotsByDate(formData.service_date);
     if (bookedResult.success) {
       const { morning, afternoon, full_day } = bookedResult.bookedSlots;
