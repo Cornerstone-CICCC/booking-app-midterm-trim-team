@@ -47,7 +47,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
       time_slot, status, note, created_at, updated_at
     from bookings
     order by service_date asc, time_slot asc
-  `) as Booking[];
+  `) as Booking[]
 
   const pendingCount = bookings.filter((booking) => booking.status === "pending").length;
   const visible = pendingOnly ? bookings.filter((booking) => booking.status === "pending") : bookings;
@@ -155,7 +155,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         </>
       )}
     </div>
-  );
+  )
 }
 
 function DayList({ label, bookings }: { label: string; bookings: Booking[] }) {
