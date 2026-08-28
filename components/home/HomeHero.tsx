@@ -6,7 +6,7 @@ export default function HomeHero() {
   return (
     <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 overflow-hidden text-white">
       <HeroCarousel />
-      <div className="absolute inset-0 bg-linear-to-br from-emerald-800/85 to-green-700/70" />
+      <div className="absolute inset-0 bg-linear-to-br from-emerald-800/60 to-green-700/10" />
 
       <div className="relative mx-auto max-w-3xl px-6 pt-16 pb-28 text-center md:pt-24 md:pb-36">
         <p className="text-sm font-semibold uppercase tracking-wider text-emerald-100">
