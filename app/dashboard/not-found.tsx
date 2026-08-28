@@ -14,7 +14,7 @@ export default function DashboardNotFound() {
         <div className="h-1 bg-green-700 rounded-full mt-2" />
       </div>
 
-      <div className="border border-gray-200 rounded-2xl shadow-sm bg-white px-6 sm:px-8 py-8">
+      <div className="border border-gray-200 rounded-lg bg-white px-6 sm:px-8 py-8">
         <p className="text-lg text-gray-900">This booking does not exist.</p>
         <p className="mt-3 text-base leading-relaxed text-gray-500">
           It may have been removed, or the link is wrong.

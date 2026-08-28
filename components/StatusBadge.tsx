@@ -1,6 +1,6 @@
 import { statusLabel } from "@/lib/types";
 
-// Coloured pill for pending / confirmed / completed / cancel.
+// Coloured pill for pending / confirmed / completed / cancelled.
 
 const COLORS: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
