@@ -14,7 +14,6 @@ export default async function SiteHeader() {
           Trim Team
         </Link>
         <nav className="flex gap-4 text-sm">
-          <Link href="/step1">Book</Link>
           <Link href="/dashboard">{signedIn ? "Dashboard" : "Staff Login"}</Link>
         </nav>
       </div>
