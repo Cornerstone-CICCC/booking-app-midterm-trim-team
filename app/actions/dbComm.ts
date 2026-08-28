@@ -12,7 +12,7 @@ async function requireStaff() {
 }
 
 function refreshBooking(id: number) {
-  revalidatePath(`/dashboard/bookingsDetails/${id}`);
+  revalidatePath(`/dashboard/${id}/edit`);
   revalidatePath(`/dashboard/${id}`);
   revalidatePath("/dashboard");
 }
