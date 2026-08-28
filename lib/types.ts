@@ -3,20 +3,20 @@ export type TimeSlot = "morning" | "afternoon" | "full_day";
 export type BookingStatus = "pending" | "confirmed" | "completed" | "cancelled";
 
 export type Booking = {
-  id: number;
-  city: string;
-  street_address: string;
-  lawn_size: LawnSize;
-  full_name: string;
-  email: string;
-  phone: string;
-  service_date: string; // "YYYY-MM-DD"
-  time_slot: TimeSlot;
-  status: BookingStatus;
-  note: string | null;
-  created_at: string;
-  updated_at: string;
-};
+  id: number
+  city: string
+  street_address: string
+  lawn_size: LawnSize
+  full_name: string
+  email: string
+  phone: string
+  service_date: string // "YYYY-MM-DD"
+  time_slot: TimeSlot
+  status: BookingStatus
+  note: string | null
+  created_at: string
+  updated_at: string
+}
 
 // Metro Vancouver cities for the step 1 dropdown.
 export const CITIES = [
@@ -55,10 +55,10 @@ export const LAWN_SIZES: { value: LawnSize; label: string; hint: string }[] = [
 ];
 
 export const TIME_SLOTS: { value: TimeSlot; label: string }[] = [
-  { value: "morning", label: "Morning (8:00–12:00)" },
-  { value: "afternoon", label: "Afternoon (13:00–17:00)" },
-  { value: "full_day", label: "Full day (8:00–17:00)" },
-];
+  { value: 'morning', label: 'Morning (8:00–12:00)' },
+  { value: 'afternoon', label: 'Afternoon (13:00–17:00)' },
+  { value: 'full_day', label: 'Full day (8:00–17:00)' },
+]
 
 export const STATUSES: { value: BookingStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
@@ -69,13 +69,13 @@ export const STATUSES: { value: BookingStatus; label: string }[] = [
 
 // Small helpers so the UI can display something more human-readable
 export function lawnSizeLabel(value: string) {
-  return LAWN_SIZES.find((s) => s.value === value)?.label ?? value;
+  return LAWN_SIZES.find((s) => s.value === value)?.label ?? value
 }
 
 export function timeSlotLabel(value: string) {
-  return TIME_SLOTS.find((s) => s.value === value)?.label ?? value;
+  return TIME_SLOTS.find((s) => s.value === value)?.label ?? value
 }
 
 export function statusLabel(value: string) {
-  return STATUSES.find((s) => s.value === value)?.label ?? value;
+  return STATUSES.find((s) => s.value === value)?.label ?? value
 }

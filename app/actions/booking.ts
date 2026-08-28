@@ -1,7 +1,8 @@
 "use server";
 
 import { sql } from "@/lib/db";
-import type { TimeSlot } from "@/lib/types";
+import { todayInVancouver } from "@/lib/format";
+import type { Booking, TimeSlot } from "@/lib/types";
 
 export type CreateBookingInput = {
   city: string;
@@ -16,6 +17,8 @@ export type CreateBookingInput = {
 };
 
 export type CreateBookingResult = { success: true } | { success: false; error: string };
+
+export type BookingsByEmailResult = { success: true; bookings: Booking[] | null } | { success: false; error: string };
 
 export type BookedSlots = {
   morning: boolean;
@@ -96,10 +99,7 @@ export async function createBooking(formData: CreateBookingInput): Promise<Creat
   }
 }
 
-export async function getBookedSlotsByDate(serviceDate: string): Promise<{
-  success: boolean;
-  bookedSlots: BookedSlots;
-}> {
+export async function getBookedSlotsByDate(serviceDate: string): Promise<{success: boolean, bookedSlots: BookedSlots}> {
   const noBookedSlots: BookedSlots = {
     morning: false,
     afternoon: false,
@@ -127,5 +127,29 @@ export async function getBookedSlotsByDate(serviceDate: string): Promise<{
     const message = error instanceof Error ? error.message : undefined;
     console.error("getBookedSlotsByDate failed:", message, error);
     return { success: false, bookedSlots: noBookedSlots };
+  }
+}
+
+export async function getBookingsByEmail(email: string): Promise<BookingsByEmailResult> {
+  try {
+    const today = todayInVancouver();
+
+    const rows = await sql`
+      SELECT
+        id, city, street_address, lawn_size, full_name, email, phone,
+        to_char(service_date, 'YYYY-MM-DD') AS service_date,
+        time_slot, status, note, created_at, updated_at
+      FROM bookings
+      WHERE lower(email) = ${email.toLowerCase()}
+        AND service_date >= ${today}
+      ORDER BY service_date ASC
+    `;
+
+    return { success: true, bookings: rows.length > 0 ? (rows as Booking[]) : null };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : undefined;
+    console.error("getBookingsByEmail failed:", message, error);
+
+    return { success: false, error: "Failed to load bookings. Please try again." };
   }
 }

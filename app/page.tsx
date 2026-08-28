@@ -1,13 +1,30 @@
-import Link from "next/link";
+import BookingLookup from "@/components/home/BookingLookup";
+import HomeCta from "@/components/home/HomeCta";
+import HomeHero from "@/components/home/HomeHero";
+import HowItWorks from "@/components/home/HowItWorks";
+import SiteFooter from "@/components/home/SiteFooter";
+import WhyTrimTeam from "@/components/home/WhyTrimTeam";
 
-export default function HomePage() {
+// let bookings = (await sql`
+//       select
+//       from bookings
+//       where email = 'x'
+//     `) as Booking[]
+
+export default async function HomePage() {
+  // async function search(formData: FormData) {
+  //   'use server'
+  //   bookings = await searchDB(formData.get('email')?.toString() || '')
+  // }
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-2">Trim Team</h1>
-
-      <Link href="/step1" className="inline-block bg-green-700 text-white rounded px-5 py-3">
-        Book a service
-      </Link>
+    <div className="space-y-16">
+      <HomeHero />
+      <BookingLookup />
+      <HowItWorks />
+      <WhyTrimTeam />
+      <HomeCta />
+      <SiteFooter />
     </div>
   );
 }
