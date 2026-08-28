@@ -1,8 +1,22 @@
 import Link from "next/link";
+import BookingFilters from "@/components/BookingFilters";
 import BookingRow, { BookingCard } from "@/components/BookingRow";
 import { dateGroupLabel, todayInVancouver } from "@/lib/format";
 import { sql } from "@/lib/db";
-import { type Booking, type TimeSlot } from "@/lib/types";
+import { CITIES, LAWN_SIZES, STATUSES, type Booking, type TimeSlot } from "@/lib/types";
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+function dashboardHref(status: string, city: string, lawnSize: string) {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (city) params.set("city", city);
+  if (lawnSize) params.set("lawn_size", lawnSize);
+  const query = params.toString();
+  return query ? `/dashboard?${query}` : "/dashboard";
+}
 
 // The staff dashboard: every booking, with a link to the detail page.
 
@@ -37,8 +51,18 @@ function splitUpcomingAndPast(bookings: Booking[], today: string) {
 }
 
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
-  const { status } = await searchParams;
-  const pendingOnly = status === "pending";
+  const raw = await searchParams;
+  const statusFilter = STATUSES.some((item) => item.value === firstParam(raw.status))
+    ? firstParam(raw.status)
+    : "";
+  const cityFilter = CITIES.includes(firstParam(raw.city) as (typeof CITIES)[number])
+    ? firstParam(raw.city)
+    : "";
+  const lawnFilter = LAWN_SIZES.some((item) => item.value === firstParam(raw.lawn_size))
+    ? firstParam(raw.lawn_size)
+    : "";
+  const pendingOnly = statusFilter === "pending";
+  const hasFilters = Boolean(statusFilter || cityFilter || lawnFilter);
 
   const bookings = (await sql`
     select
@@ -49,8 +73,18 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     order by service_date asc, time_slot asc
   `) as Booking[]
 
-  const pendingCount = bookings.filter((booking) => booking.status === "pending").length;
-  const visible = pendingOnly ? bookings.filter((booking) => booking.status === "pending") : bookings;
+  const pendingCount = bookings.filter((booking) => {
+    if (booking.status !== "pending") return false;
+    if (cityFilter && booking.city !== cityFilter) return false;
+    if (lawnFilter && booking.lawn_size !== lawnFilter) return false;
+    return true;
+  }).length;
+  const visible = bookings.filter((booking) => {
+    if (statusFilter && booking.status !== statusFilter) return false;
+    if (cityFilter && booking.city !== cityFilter) return false;
+    if (lawnFilter && booking.lawn_size !== lawnFilter) return false;
+    return true;
+  });
   const today = todayInVancouver();
   const { upcoming, past } = splitUpcomingAndPast(visible, today);
 
@@ -63,26 +97,28 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
             <div className="h-1 bg-green-700 rounded-full mt-2 mb-3" />
           </div>
         </div>
-        <p className="text-sm text-gray-500">
-          {pendingCount === 0 ? (
-            "Nothing pending"
-          ) : pendingOnly ? (
-            <>
+        {pendingCount === 0 ? (
+          <p className="text-sm text-gray-500">Nothing pending</p>
+        ) : pendingOnly ? (
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+            <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1.5 font-medium text-yellow-800">
               {pendingCount} need confirmation
-              {" · "}
-              <Link href="/dashboard" className="font-medium text-green-800 hover:underline">
-                Show all
-              </Link>
-            </>
-          ) : (
-            <Link href="/dashboard?status=pending" className="font-medium text-green-800 hover:underline">
-              {pendingCount} need confirmation
+            </span>
+            <Link href={dashboardHref("", cityFilter, lawnFilter)} className="font-medium text-green-800 hover:underline">
+              Show all
             </Link>
-          )}
-        </p>
+          </p>
+        ) : (
+          <Link
+            href={dashboardHref("pending", cityFilter, lawnFilter)}
+            className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-1.5 text-sm font-medium text-yellow-800 hover:bg-yellow-200"
+          >
+            {pendingCount} need confirmation
+          </Link>
+        )}
       </div>
 
-      {/* TO-DO: Add search filters */}
+      <BookingFilters status={statusFilter} city={cityFilter} lawnSize={lawnFilter} />
 
       {bookings.length === 0 ? (
         <div className="border border-gray-200 rounded-lg px-4 py-12 text-center text-sm text-gray-500 bg-white">
@@ -90,7 +126,7 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
         </div>
       ) : visible.length === 0 ? (
         <div className="border border-gray-200 rounded-lg px-4 py-12 text-center text-sm text-gray-500 bg-white">
-          No pending bookings.
+          {hasFilters ? "No bookings match these filters." : "No pending bookings."}
         </div>
       ) : (
         <>
