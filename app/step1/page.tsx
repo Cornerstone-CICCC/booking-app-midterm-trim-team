@@ -19,7 +19,6 @@ export default function Step1Page() {
   const [streetAddress, setStreetAddress] = useState("");
   const [lawnSize, setLawnSize] = useState<LawnSize | "">("");
 
-  // 클라이언트가 마운트된 후에 localStorage(Draft) 데이터를 불러와서 하이드레이션 에러를 방지합니다.
   useEffect(() => {
     const currentDraft = getDraft();
     if (currentDraft.city) setCity(currentDraft.city as City);
