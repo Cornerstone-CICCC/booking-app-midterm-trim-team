@@ -64,8 +64,12 @@ export const STATUSES: { value: BookingStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
   { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancel" },
+  { value: "cancelled", label: "Cancelled" },
 ];
+
+export function isEditableStatus(status: string) {
+  return status === "pending" || status === "confirmed";
+}
 
 // Small helpers so the UI can display something more human-readable
 export function lawnSizeLabel(value: string) {

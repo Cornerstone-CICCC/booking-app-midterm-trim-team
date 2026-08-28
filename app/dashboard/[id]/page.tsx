@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
 import { sql } from "@/lib/db";
 import { formatDate } from "@/lib/format";
-import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
+import { isEditableStatus, lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
 
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -54,7 +54,7 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
         <div className="h-1 bg-green-700 rounded-full mt-2" />
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-stretch border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+      <div className="flex flex-col md:flex-row md:items-stretch border border-gray-200 rounded-lg overflow-hidden bg-white">
         <div className="min-w-0 flex-1 px-4 sm:px-6 py-5">
           <dl>
             <Info label="Client name">{booking.full_name}</Info>
@@ -83,27 +83,20 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
         </div>
 
         <aside className={`flex flex-col gap-4 shrink-0 md:w-52 px-4 py-5 border-t md:border-t-0 md:border-l ${rail.wrap}`}>
-          <div className={`rounded-xl bg-white px-3 py-3 border ${rail.card}`}>
+          <div className={`rounded bg-white px-3 py-3 border ${rail.card}`}>
             <p className="text-xs text-gray-500 mb-2">Status</p>
             <StatusBadge status={booking.status} className="block w-full text-sm py-1.5 text-center" />
           </div>
 
-          <div className="md:mt-auto space-y-2">
-            {booking.status !== "cancelled" && (
-              // TO-DO: Add action to cancel booking
-              <button
-                type="button"
-                className="w-full text-sm border border-red-600 text-red-600 bg-white rounded-lg px-3 py-2 hover:bg-red-50"
+          <div className="md:mt-auto">
+            {isEditableStatus(booking.status) && (
+              <Link
+                href={`/dashboard/bookingsDetails/${booking.id}`}
+                className="block w-full text-sm text-center bg-green-50 text-green-800 border border-green-700 rounded px-3 py-2 hover:bg-green-100"
               >
-                Cancel
-              </button>
+                Edit
+              </Link>
             )}
-            <Link
-              href={`/dashboard/bookingsDetails/${booking.id}`}
-              className="block w-full text-sm text-center border border-green-800 text-green-800 bg-white rounded-lg px-3 py-2 hover:bg-green-50"
-            >
-              Edit
-            </Link>
           </div>
         </aside>
       </div>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import StatusBadge from "@/components/StatusBadge";
-import { lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
+import { isEditableStatus, lawnSizeLabel, timeSlotLabel, type Booking } from "@/lib/types";
 
 function rowAccent(status: string) {
   if (status === "pending") return "border-l-amber-400";
@@ -29,9 +29,11 @@ export function BookingCard({ booking }: { booking: Booking }) {
             {booking.phone} · {lawnSizeLabel(booking.lawn_size)}
           </p>
           <p className="mt-2 flex gap-6 text-sm">
-            <Link href={editHref} className="text-gray-500 hover:text-gray-900">
-              Edit
-            </Link>
+            {isEditableStatus(booking.status) && (
+              <Link href={editHref} className="text-gray-500 hover:text-gray-900">
+                Edit
+              </Link>
+            )}
             <Link href={detailsHref} className="text-gray-500 hover:text-gray-900">
               Details
             </Link>
@@ -66,9 +68,11 @@ export default function BookingRow({ booking }: { booking: Booking }) {
         <p className="text-gray-500 mt-0.5">{lawnSizeLabel(booking.lawn_size)}</p>
       </td>
       <td className="px-4 py-2.5 align-middle whitespace-nowrap">
-        <Link href={editHref} className="text-sm text-gray-500 hover:text-gray-900">
-          Edit
-        </Link>
+        {isEditableStatus(booking.status) && (
+          <Link href={editHref} className="text-sm text-gray-500 hover:text-gray-900">
+            Edit
+          </Link>
+        )}
       </td>
       <td className="px-4 py-2.5 align-middle whitespace-nowrap">
         <Link href={detailsHref} className="text-sm text-gray-500 hover:text-gray-900">

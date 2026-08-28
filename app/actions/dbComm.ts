@@ -32,13 +32,13 @@ export async function bookingsDB(id: number) {
 
 export async function confirmDB(id: number) {
   await requireStaff();
-  await sql`UPDATE bookings SET status = 'confirmed' WHERE id = ${id}`;
+  await sql`UPDATE bookings SET status = 'confirmed' WHERE id = ${id} AND status = 'pending'`;
   refreshBooking(id);
 }
 
 export async function cancelDB(id: number) {
   await requireStaff();
-  await sql`UPDATE bookings SET status = 'cancelled' WHERE id = ${id}`;
+  await sql`UPDATE bookings SET status = 'cancelled' WHERE id = ${id} AND status IN ('pending', 'confirmed')`;
   refreshBooking(id);
 }
 
@@ -56,7 +56,27 @@ export async function updateDB(
 ) {
   await requireStaff();
   await sql`UPDATE bookings SET city = ${city}, street_address = ${street_address}, lawn_size = ${lawn_size}, full_name = ${full_name}, email = ${email}, phone = ${phone}, service_date = ${service_date}, time_slot = ${time_slot}, note = ${note}
-WHERE id = ${id}`;
+WHERE id = ${id} AND status IN ('pending', 'confirmed')`;
   refreshBooking(id);
   return 1;
+}
+
+export async function applyUpdate(id: number, formData: FormData, fallback: Booking) {
+  const full_name = String(formData.get("full_name") ?? "") || fallback.full_name;
+  const email = String(formData.get("email") ?? "") || fallback.email;
+  const phone = String(formData.get("phone") ?? "") || fallback.phone;
+  const lawn_size = String(formData.get("lawn_size") ?? "") || fallback.lawn_size;
+  const note = String(formData.get("note") ?? "");
+  const street = String(formData.get("street") ?? "") || fallback.street_address;
+  const city = String(formData.get("city") ?? "") || fallback.city;
+  const time_slot = String(formData.get("time_slot") ?? "") || fallback.time_slot;
+  const service_date = String(formData.get("service_date") ?? "") || fallback.service_date;
+
+  await updateDB(id, city, street, lawn_size, full_name, email, phone, service_date, time_slot, note);
+}
+
+export async function completedDB(id: number) {
+  await requireStaff();
+  await sql`UPDATE bookings SET status = 'completed' WHERE id = ${id} AND status = 'confirmed'`;
+  refreshBooking(id);
 }

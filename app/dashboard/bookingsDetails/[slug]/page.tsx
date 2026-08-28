@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import StatusBadge from "@/components/StatusBadge";
-import { cancelDB, bookingsDB, confirmDB, updateDB } from "@/app/actions/dbComm";
-import { CITIES, LAWN_SIZES, TIME_SLOTS } from "@/lib/types";
+import { cancelDB, bookingsDB, confirmDB, completedDB, applyUpdate } from "@/app/actions/dbComm";
+import { CITIES, LAWN_SIZES, TIME_SLOTS, isEditableStatus } from "@/lib/types";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -13,7 +13,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const inputClass = "w-full border border-gray-300 rounded px-2 py-1.5 text-sm";
+const inputClass =
+  "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm bg-white focus:outline-none focus:border-green-700";
 
 function railClasses(status: string) {
   if (status === "pending") return { wrap: "bg-amber-50 border-amber-100", card: "border-amber-100" };
@@ -30,22 +31,33 @@ export default async function BookingEditPage({ params }: PageProps<"/dashboard/
 
   const booking = await bookingsDB(id);
   if (!booking) notFound();
+  if (!isEditableStatus(booking.status)) redirect(`/dashboard/${id}`);
 
   const rail = railClasses(booking.status);
 
   async function updateInfo(formData: FormData) {
     "use server";
-    const full_name = String(formData.get("full_name") ?? "") || booking.full_name;
-    const email = String(formData.get("email") ?? "") || booking.email;
-    const phone = String(formData.get("phone") ?? "") || booking.phone;
-    const lawn_size = String(formData.get("lawn_size") ?? "") || booking.lawn_size;
-    const note = String(formData.get("note") ?? "");
-    const street = String(formData.get("street") ?? "") || booking.street_address;
-    const city = String(formData.get("city") ?? "") || booking.city;
-    const time_slot = String(formData.get("time_slot") ?? "") || booking.time_slot;
-    const service_date = String(formData.get("service_date") ?? "") || booking.service_date;
+    await applyUpdate(id, formData, booking);
+    redirect(`/dashboard/${id}`);
+  }
 
-    await updateDB(id, city, street, lawn_size, full_name, email, phone, service_date, time_slot, note);
+  async function confirmBooking(formData: FormData) {
+    "use server";
+    await applyUpdate(id, formData, booking);
+    await confirmDB(id);
+  }
+
+  async function completeBooking(formData: FormData) {
+    "use server";
+    await applyUpdate(id, formData, booking);
+    await completedDB(id);
+    redirect(`/dashboard/${id}`);
+  }
+
+  async function cancelBooking(formData: FormData) {
+    "use server";
+    await applyUpdate(id, formData, booking);
+    await cancelDB(id);
     redirect(`/dashboard/${id}`);
   }
 
@@ -64,7 +76,7 @@ export default async function BookingEditPage({ params }: PageProps<"/dashboard/
 
       <form
         action={updateInfo}
-        className="flex flex-col md:flex-row md:items-stretch border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-white"
+        className="flex flex-col md:flex-row md:items-stretch border border-gray-200 rounded-lg overflow-hidden bg-white"
       >
         <div className="min-w-0 flex-1 px-4 sm:px-6 py-5">
           <Field label="Client name">
@@ -117,33 +129,45 @@ export default async function BookingEditPage({ params }: PageProps<"/dashboard/
         </div>
 
         <aside className={`flex flex-col gap-4 shrink-0 md:w-52 px-4 py-5 border-t md:border-t-0 md:border-l ${rail.wrap}`}>
-          <div className={`rounded-xl bg-white px-3 py-3 border ${rail.card}`}>
+          <div className={`rounded bg-white px-3 py-3 border ${rail.card}`}>
             <p className="text-xs text-gray-500 mb-2">Status</p>
             <StatusBadge status={booking.status} className="block w-full text-sm py-1.5 text-center" />
           </div>
 
           <div className="md:mt-auto space-y-2">
-            {booking.status !== "confirmed" && (
+            <button
+              type="submit"
+              className="w-full text-sm bg-green-50 text-green-800 border border-green-700 rounded px-3 py-2 hover:bg-green-100"
+            >
+              Update information
+            </button>
+            {booking.status === "pending" && (
               <button
                 type="submit"
-                formAction={confirmDB.bind(null, id)}
-                className="w-full text-sm border border-green-800 text-green-800 bg-white rounded-lg px-3 py-2 hover:bg-green-50"
+                formAction={confirmBooking}
+                className="w-full text-sm border border-green-800 text-green-800 bg-white rounded px-3 py-2 hover:bg-green-50"
               >
                 Confirm
               </button>
             )}
-            {booking.status !== "cancelled" && (
+            {booking.status === "confirmed" && (
               <button
                 type="submit"
-                formAction={cancelDB.bind(null, id)}
-                className="w-full text-sm border border-red-600 text-red-600 bg-white rounded-lg px-3 py-2 hover:bg-red-50"
+                formAction={completeBooking}
+                className="w-full text-sm border border-blue-600 text-blue-700 bg-white rounded px-3 py-2 hover:bg-blue-50"
+              >
+                Completed
+              </button>
+            )}
+            {isEditableStatus(booking.status) && (
+              <button
+                type="submit"
+                formAction={cancelBooking}
+                className="w-full text-sm border border-red-600 text-red-600 bg-white rounded px-3 py-2 hover:bg-red-50"
               >
                 Cancel
               </button>
             )}
-            <button type="submit" className="w-full text-sm border border-green-800 text-green-800 bg-white rounded-lg px-3 py-2 hover:bg-green-50">
-              Update information
-            </button>
           </div>
         </aside>
       </form>
