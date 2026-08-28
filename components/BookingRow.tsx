@@ -12,7 +12,7 @@ function rowAccent(status: string) {
 
 export function BookingCard({ booking }: { booking: Booking }) {
   const detailsHref = `/dashboard/${booking.id}`;
-  const editHref = `/dashboard/bookingsDetails/${booking.id}`;
+  const editHref = `/dashboard/${booking.id}/edit`;
   const where = `${booking.street_address}, ${booking.city}`;
 
   return (
@@ -46,7 +46,7 @@ export function BookingCard({ booking }: { booking: Booking }) {
 
 export default function BookingRow({ booking }: { booking: Booking }) {
   const detailsHref = `/dashboard/${booking.id}`;
-  const editHref = `/dashboard/bookingsDetails/${booking.id}`;
+  const editHref = `/dashboard/${booking.id}/edit`;
   const where = `${booking.street_address}, ${booking.city}`;
 
   return (

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import SavedToast from "@/components/SavedToast";
 import StatusBadge from "@/components/StatusBadge";
 import { sql } from "@/lib/db";
 import { formatDate } from "@/lib/format";
@@ -21,9 +22,11 @@ function railClasses(status: string) {
   return { wrap: "bg-green-50 border-green-100", card: "border-green-100" };
 }
 
-export default async function BookingDetailPage({ params }: PageProps<"/dashboard/[id]">) {
+export default async function BookingDetailPage({ params, searchParams }: PageProps<"/dashboard/[id]">) {
   const { id: rawId } = await params;
   const id = Number(rawId);
+  const { saved: savedParam } = await searchParams;
+  const saved = Array.isArray(savedParam) ? savedParam[0] : savedParam;
 
   if (!Number.isInteger(id) || id < 1) notFound();
 
@@ -43,6 +46,7 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
 
   return (
     <div className="max-w-3xl mx-auto">
+      <SavedToast saved={saved} />
       <p className="mb-5">
         <Link href="/dashboard" className="text-sm font-medium text-green-800 hover:underline">
           ← Back to bookings
@@ -91,7 +95,7 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
           <div className="md:mt-auto">
             {isEditableStatus(booking.status) && (
               <Link
-                href={`/dashboard/bookingsDetails/${booking.id}`}
+                href={`/dashboard/${booking.id}/edit`}
                 className="block w-full text-sm text-center bg-green-50 text-green-800 border border-green-700 rounded px-3 py-2 hover:bg-green-100"
               >
                 Edit
