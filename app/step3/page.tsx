@@ -87,16 +87,6 @@ export default function Step3Page() {
       return;
     }
 
-    if (timeSlot === "full_day" && (bookedSlots.morning || bookedSlots.afternoon)) {
-      toast.error("Full day cannot be booked when morning or afternoon slots are already taken.");
-      return;
-    }
-
-    if ((timeSlot === "morning" || timeSlot === "afternoon") && bookedSlots.full_day) {
-      toast.error("Morning or afternoon slots cannot be booked when the full day is already taken.");
-      return;
-    }
-
     const draft = saveDraft({
       service_date: serviceDate,
       time_slot: timeSlot as TimeSlot,
