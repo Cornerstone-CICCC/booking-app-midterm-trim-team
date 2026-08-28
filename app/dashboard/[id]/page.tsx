@@ -102,7 +102,7 @@ export default async function BookingDetailPage({ params }: PageProps<"/dashboar
               href={`/dashboard/bookingsDetails/${booking.id}`}
               className="block w-full text-sm text-center border border-green-800 text-green-800 bg-white rounded-lg px-3 py-2 hover:bg-green-50"
             >
-              Update information
+              Edit
             </Link>
           </div>
         </aside>
