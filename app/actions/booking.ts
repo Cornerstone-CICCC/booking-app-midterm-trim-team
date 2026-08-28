@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "@/lib/db";
+import { todayInVancouver } from "@/lib/format";
 import type { Booking, TimeSlot } from "@/lib/types";
 
 export type CreateBookingInput = {
@@ -109,6 +110,8 @@ export async function getBookedSlotsByDate(serviceDate: string): Promise<{succes
 
 export async function getBookingsByEmail(email: string): Promise<BookingsByEmailResult> {
   try {
+    const today = todayInVancouver();
+
     const rows = await sql`
       SELECT
         id, city, street_address, lawn_size, full_name, email, phone,
@@ -116,7 +119,8 @@ export async function getBookingsByEmail(email: string): Promise<BookingsByEmail
         time_slot, status, note, created_at, updated_at
       FROM bookings
       WHERE lower(email) = ${email.toLowerCase()}
-      ORDER BY created_at DESC
+        AND service_date >= ${today}
+      ORDER BY service_date ASC
     `;
 
     return { success: true, bookings: rows.length > 0 ? (rows as Booking[]) : null };
